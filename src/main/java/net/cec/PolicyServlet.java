@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(
-    name = "HomeServlet",
-    urlPatterns = {"/"}
+    name = "PolicyServlet",
+    urlPatterns = {"/policy"}
 )
-public class HomeServlet extends HttpServlet {
+public class PolicyServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -20,7 +20,7 @@ public class HomeServlet extends HttpServlet {
     response.setContentType("text/plain");
     response.setCharacterEncoding("UTF-8");
 
-    response.getWriter().print("HOME Page");
+    response.getWriter().print("Policy");
 
   }
 }
