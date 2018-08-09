@@ -2,12 +2,14 @@ package net.cec.filter;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import com.restfb.DefaultFacebookClient;
 import com.restfb.Parameter;
 import com.restfb.Version;
+import com.restfb.exception.FacebookOAuthException;
 import com.restfb.types.User;
 
 import net.cec.utils.Secret;
@@ -18,7 +20,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.servlet.*;
-
+@WebFilter(urlPatterns = {"/*"})
 public class TokenFilter implements Filter {
 	
 	static Logger logger = Logger.getLogger(TokenFilter.class.getName());
@@ -33,8 +35,7 @@ public class TokenFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		response.setContentType("text/plain");
-		response.setCharacterEncoding("UTF-8");
+		
 		HttpServletRequest req = (HttpServletRequest) request;
 		
 		
@@ -52,12 +53,23 @@ public class TokenFilter implements Filter {
 		
 		if(cookieToken!=null)
 		{
-			DefaultFacebookClient client = new DefaultFacebookClient(cookieToken,Version.LATEST);
-			User user = client.fetchObject("/me", User.class, Parameter.with("fields",
-				"email,name"));
-			 request.setAttribute("User",user);
+			
+			try {
+				DefaultFacebookClient client = new DefaultFacebookClient(cookieToken,Version.LATEST);
+				User user = client.fetchObject("/me", User.class, Parameter.with("fields",
+					"email,name"));
+				 request.setAttribute("User",user);
+				 
+				 logger.warning("User :"+user.getEmail() +" found!!");
+			} catch (FacebookOAuthException FB) {
+				 logger.warning(FB.getMessage());
+				 
+			}
+			
+			 
+			 
 		}
-       
+		
 		
 		chain.doFilter(request, response);
 	}

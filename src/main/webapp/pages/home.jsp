@@ -2,3 +2,4 @@
 	pageEncoding="utf-8"%>
 <jsp:include page="/elements/header.jsp" />
 HOMEPAGE
+<jsp:include page="/elements/footer.jsp" />
