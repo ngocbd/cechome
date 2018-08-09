@@ -1,4 +1,4 @@
-package net.cec;
+package net.cec.filter;
 
 import javax.servlet.annotation.WebFilter;
 

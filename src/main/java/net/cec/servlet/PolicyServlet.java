@@ -1,4 +1,4 @@
-package net.cec;
+package net.cec.servlet;
 
 import java.io.IOException;
 
@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(
-    name = "PrivacyServlet",
-    urlPatterns = {"/privacy"}
+    name = "PolicyServlet",
+    urlPatterns = {"/policy"}
 )
-public class PrivacyServlet extends HttpServlet {
+public class PolicyServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -20,7 +20,7 @@ public class PrivacyServlet extends HttpServlet {
     response.setContentType("text/plain");
     response.setCharacterEncoding("UTF-8");
 
-    response.getWriter().print("privacy");
+    response.getWriter().print("Policy");
 
   }
 }
