@@ -24,10 +24,13 @@ public class LoginServlet extends HttpServlet {
 
     response.setContentType("text/html");
     response.setCharacterEncoding("UTF-8");
-    String callbackURL= request.getScheme() + "://" +  
-            request.getServerName() +      
-            ":" +                        
-            request.getServerPort() +"/callback"; 
+    String callbackURL = request.getScheme() + "://" + request.getServerName();
+	if(request.getServerPort()!=80 && request.getServerPort() !=443)
+	{
+		callbackURL+= ":" + request.getServerPort();
+	}
+	
+	callbackURL+= "/callback"; 
     String facebook = new String(Secret.FacebookOauthBaseURL+"client_id="+Secret.FacebookAppId+"&redirect_uri="+callbackURL+"&scope=public_profile%2Cemail%2Cpublic_profile");
     
     

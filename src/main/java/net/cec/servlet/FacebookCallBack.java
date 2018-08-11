@@ -56,9 +56,13 @@ public class FacebookCallBack extends HttpServlet {
 		if (code == null || code.isEmpty()) {
 			response.sendRedirect("/login");
 		} else {
-
-			String callbackURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-					+ "/callback";
+			String callbackURL = request.getScheme() + "://" + request.getServerName();
+			if(request.getServerPort()!=80 && request.getServerPort() !=443)
+			{
+				callbackURL+= ":" + request.getServerPort();
+			}
+			
+			callbackURL+= "/callback";
 			
 
 			FacebookClient client = new DefaultFacebookClient(Version.LATEST);
