@@ -31,7 +31,7 @@ import net.cec.entities.*;
 /**
  * Servlet implementation class GetPostListGroup. The class to get all posts in the list of the group.
  */
-@WebServlet("/getlgpost")
+@WebServlet("/cron/crawl/links")
 public class GetPostListGroup extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	static Logger logger = Logger.getLogger(GetPostListGroup.class.getName());
@@ -51,16 +51,14 @@ public class GetPostListGroup extends HttpServlet {
 		String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
 		FacebookClient fbClient = new DefaultFacebookClient(accessToken,
 				Version.LATEST);
-		Date haftYearAgo = new Date(System.currentTimeMillis()
-				- (1000L * 60L * 60L * 24L * 180L));
-		boolean noUpdate = false;
-
+		
+		//https://www.facebook.com/mon.mon.8997/videos/pcb.2129681200638258/950382381836554/?type=3&ifg=1
+		//https://www.facebook.com/media/set/?set\u003dpcb.2129681200638258\u0026type\u003d1
 		Connection<JsonObject> listPost = fbClient
 				.fetchConnection(
 						Utilities.groupId + "/feed",
 						JsonObject.class,
 						Parameter.with("limit", Utilities.limitPageFB),
-						Parameter.with("since", haftYearAgo),
 						Parameter
 								.with("fields",
 										"id"));

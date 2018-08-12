@@ -22,13 +22,7 @@ public class StartupListener implements ServletContextListener {
         // TODO Auto-generated constructor stub
     }
 
-    static {
-		/**
-		 * Register Entity Class
-		 **/
-		ObjectifyService.register(MemberPost.class);
-		
-	}
+    
     
 	/**
      * @see ServletContextListener#contextDestroyed(ServletContextEvent)
@@ -41,7 +35,7 @@ public class StartupListener implements ServletContextListener {
      * @see ServletContextListener#contextInitialized(ServletContextEvent)
      */
     public void contextInitialized(ServletContextEvent sce)  { 
-         // TODO Auto-generated method stub
+    	ObjectifyService.register(MemberPost.class);
     }
 	
 }

@@ -1,4 +1,4 @@
-package net.cec.cronjob;
+package net.cec.task.handler;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -18,14 +18,14 @@ import com.restfb.Parameter;
 import com.restfb.Version;
 import com.restfb.json.JsonObject;
 import com.restfb.types.Post;
-
+import org.apache.commons.lang3.StringEscapeUtils;
 import net.cec.utils.Utilities;
 import net.cec.entities.*;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 /**
  * Servlet implementation class GetPostContent
  */
-@WebServlet("/GetPostContent")
+@WebServlet("/task/crawl/post")
 public class GetPostContent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -48,21 +48,58 @@ public class GetPostContent extends HttpServlet {
 		String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
 		FacebookClient fbClient = new DefaultFacebookClient(accessToken,
 				Version.LATEST);
-		Date haftYearAgo = new Date(System.currentTimeMillis()
-				- (1000L * 60L * 60L * 24L * 180L));
-		boolean noUpdate = false;
-		
-		
+				
 		Post post = fbClient
 				.fetchObject(
 						strId,
 						Post.class,
 						Parameter
 								.with("fields",
-										"admin_creator,application,backdated_time,call_to_action,caption,child_attachments,comments_mirroring_domain,coordinates,created_time,description,event,from,full_picture,expanded_height,expanded_width,feed_targeting,height,icon,id,link,message,name,object_id,parent_id,permalink_url,picture,place,privacy,promotion_status,properties,scheduled_publish_time,shares,source,status_type,story,story_tags,subscribed,target,targeting,timeline_visibility,type,updated_time,via,width,with_tags,attachments{description,media,target,title,type,url,description_tags},comments.limit(100000).summary(true){from,message,comment_count,created_time,id,like_count},reactions.limit(100000).summary(true){id,link,name,type,username},sharedposts.summary(true){actions,from}"));
+										"attachments, message, created_time"));
 //		String id = post.getId();
 //		System.out.println("Id: "+post.getId());
-//		System.out.println("Attachments: "+post.getAttachments().toString());
+		/*
+		Attachments[
+		            data=[
+		                StoryAttachment[
+		                                description=null 
+		                                id=null 
+		                                media=Media[
+		                                            id=null 
+		                                            image=Image[
+		                                                        height=720 
+		                                                        id=null 
+		                                                        metadata=null 
+		                                                        src=https://scontent.xx.fbcdn.net/v/t15.0-10/s720x720/37570363_10210381507932658_5026467077674762240_n.jpg?_nc_cat=0&oh=c7c908fd56e3ce12b1cbb3d190f988d1&oe=5BFE26C2 
+	                                                        	type=null 
+	                                                        	width=405
+		                                                        ] 
+                                        			metadata=null 
+                                        			type=null
+                                        			] 
+                    					metadata=null 
+                    					subAttachments=null 
+                    					target=Target[
+                    					              id=10210381505412595 
+                    					              metadata=null 
+                    					              type=null 
+                    					              url=https://www.facebook.com/saobien.huyen/videos/10210381505412595/
+                    					             ] 
+					            	    title=null 
+					            	    type=video_
+					            	    inline url=https://www.facebook.com/saobien.huyen/videos/10210381505412595/
+					            	    ]
+            	    	]
+	    			]
+	    */
+		
+		String attachmentStr = "";
+		for(int i=0;i<post.getAttachments().getData().size();i++)
+		{
+//			System.out.println("Attachments at "+(i+1)+": "+net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
+			attachmentStr +=StringEscapeUtils.unescapeEcmaScript(net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
+		}
+		System.out.println("hbg: "+attachmentStr);
 //		System.out.println("Type: "+post.getType());
 //		System.out.println("Content: "+post.getMessage());
 //		System.out.println("createDate: "+post.getCreatedTime().getTime());
@@ -79,8 +116,8 @@ public class GetPostContent extends HttpServlet {
 //				String id, String attachments, String type, String content, Long createDate, String featuredImage, Long lastupdate, String permalink, String picture, String posterId
 				memberPost = new MemberPost();
 				memberPost.setId(post.getId());
-				memberPost.setAttachments(post.getAttachments().toString());
-				memberPost.setType(post.getType());
+				memberPost.setAttachments(attachmentStr);
+//				memberPost.setType(post.getType());
 				memberPost.setContent(post.getMessage());
 				memberPost.setCreatedDate(post.getCreatedTime().getTime());
 				memberPost.setLastUpdate(Calendar.getInstance().getTime().getTime());
