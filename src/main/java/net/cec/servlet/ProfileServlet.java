@@ -27,7 +27,7 @@ import net.cec.entities.MemberPost;
 /**
  * Servlet implementation class ProfileServlet
  */
-@WebServlet(name = "FacebookCallBack", urlPatterns = { "/m/*" })
+@WebServlet(name = "ProfileServlet", urlPatterns = { "/m/*" })
 public class ProfileServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -45,8 +45,11 @@ public class ProfileServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		// TODO Auto-generated method stub
-		String memberId = request.getParameter("memberid");
+		//url=http://localhost:8080/m/100007532462525
+		String memberId = request.getRequestURI().substring(request.getRequestURI().indexOf("m/")+2,request.getRequestURI().length());
+//		System.out.println("member id: "+memberId);
 		response.setContentType("text/html");
 		Key<Member> key = Key.create(Member.class, memberId);
 		Member member = ofy().load().key(key).now();
