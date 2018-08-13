@@ -62,7 +62,7 @@ public class FacebookCallBack extends HttpServlet {
 			{
 				System.out.println("UserId 1 : "+user.getId()+ ", Email: "+user.getEmail()+", Name: "+user.getName());
 
-				Key<Account> key = Key.create(Account.class, user.getId());					
+				Key<Account> key = Key.create(Account.class, Long.parseLong(user.getId()));					
 				Account account = ofy().load().key(key).now();
 				if(account==null)
 				{
