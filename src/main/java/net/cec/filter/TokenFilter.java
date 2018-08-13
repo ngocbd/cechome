@@ -6,12 +6,16 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import com.googlecode.objectify.Key;
 import com.restfb.DefaultFacebookClient;
+import com.restfb.FacebookClient;
 import com.restfb.Parameter;
 import com.restfb.Version;
+import com.restfb.FacebookClient.AccessToken;
 import com.restfb.exception.FacebookOAuthException;
 import com.restfb.types.User;
 
+import net.cec.entities.Account;
 import net.cec.utils.Secret;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -72,6 +76,9 @@ public class TokenFilter implements Filter {
 		
 		
 		chain.doFilter(request, response);
+		
+		
+		
 	}
 
 	@Override
