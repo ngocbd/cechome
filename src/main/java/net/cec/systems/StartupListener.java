@@ -36,6 +36,7 @@ public class StartupListener implements ServletContextListener {
      */
     public void contextInitialized(ServletContextEvent sce)  { 
     	ObjectifyService.register(MemberPost.class);
+    	ObjectifyService.register(Account.class);
     }
 	
 }
