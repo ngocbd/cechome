@@ -1,16 +1,29 @@
 package net.cec.servlet;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
 import java.io.IOException;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.cmd.Query;
+
+import net.cec.entities.Member;
+import net.cec.entities.MemberPost;
+
 /**
  * Servlet implementation class DetailPostServlet
  */
-@WebServlet("/DetailPostServlet")
+@WebServlet("/p/*")
 public class DetailPostServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -27,7 +40,26 @@ public class DetailPostServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		//https://www.facebook.com/groups/244938432775599/permalink/260423091227133/
+		Matcher matcher = Pattern.compile("/p/(\\d*)/?").matcher(request.getRequestURI());
+		 int count = 0;
+	    matcher.find();
+//		1784461175160264_1785781861694862
+		String postId = "1784461175160264_"+matcher.group(1);
+		
+		Key<MemberPost> key = Key.create(MemberPost.class, postId);
+		MemberPost memberPost = ofy().load().key(key).now();
+
+		
+		request.setAttribute("post", memberPost);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/post.jsp");
+		try {
+			dispatcher.forward(request, response);
+		} catch (ServletException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
