@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import net.cec.utils.Utilities;
 import net.cec.entities.*;
 import static com.googlecode.objectify.ObjectifyService.ofy;
+import com.fcs.*;
 /**
  * Servlet implementation class GetPostContent
  */
@@ -117,7 +118,7 @@ public class GetPostContent extends HttpServlet {
 				memberPost = new MemberPost();
 				memberPost.setId(post.getId());
 				memberPost.setAttachments(attachmentStr);
-//				memberPost.setType(post.getType());
+				memberPost.setType(post.getType());
 				memberPost.setContent(post.getMessage());
 				memberPost.setCreatedDate(post.getCreatedTime().getTime());
 				memberPost.setLastUpdate(Calendar.getInstance().getTime().getTime());
@@ -126,6 +127,10 @@ public class GetPostContent extends HttpServlet {
 				memberPost.setPosterId(posterId);
 				
 				ofy().save().entities(memberPost);	
+				
+				Querify querify = new Querify("cec");
+//				querify.insert(objs);
+				querify.insert(memberPost);
 			}
 		}
 		
@@ -138,6 +143,11 @@ public class GetPostContent extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+	
+	public static void main(String[] args) {
+		Querify.getInstance().createTable(MemberPost.class);
+		
 	}
 
 }

@@ -83,6 +83,7 @@ public class FacebookCallBack extends HttpServlet {
 					account.setAccessToken(token.getAccessToken());
 				}
 				ofy().save().entities(account);	
+				
 			}
 			
 			Cookie c = new Cookie(Secret.TokenCookieName, token.getAccessToken());

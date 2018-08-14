@@ -52,7 +52,7 @@ public class ProfileServlet extends HttpServlet {
 		//url=http://localhost:8080/m/100007532462525
 		
 		Matcher matcher = Pattern.compile("/m/(\\d*)/?").matcher(request.getRequestURI());
-		 int count = 0;
+		int count = 0;
 	    matcher.find();
 		String memberId = matcher.group(1);
 		
