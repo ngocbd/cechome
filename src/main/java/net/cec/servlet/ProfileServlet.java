@@ -4,6 +4,8 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -48,7 +50,13 @@ public class ProfileServlet extends HttpServlet {
 		
 		// TODO Auto-generated method stub
 		//url=http://localhost:8080/m/100007532462525
-		String memberId = request.getRequestURI().substring(request.getRequestURI().indexOf("m/")+2,request.getRequestURI().length());
+		
+		Matcher matcher = Pattern.compile("/m/(\\d*)/?").matcher(request.getRequestURI());
+		 int count = 0;
+	    matcher.find();
+		String memberId = matcher.group(1);
+		
+		
 //		System.out.println("member id: "+memberId);
 		response.setContentType("text/html");
 		Key<Member> key = Key.create(Member.class, memberId);
