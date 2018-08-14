@@ -7,7 +7,7 @@
 			<a href="/login">Login</a>
 		</c:when>
 		<c:otherwise>
-			<a href="/profile"><img src="http://graph.facebook.com/${User.getId()}/picture?type=square" /></a>
+			<a href="/profile"><img src="//graph.facebook.com/${User.id}/picture?type=square" /></a>
 			<a href="/logout">Logout</a>
 		</c:otherwise>
 	</c:choose>
