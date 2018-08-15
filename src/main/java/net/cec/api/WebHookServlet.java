@@ -92,6 +92,8 @@ public class WebHookServlet extends HttpServlet {
 			if (jsonObject3.get("message") != null) {
 				JSONObject jsonObject4 = new JSONObject(jsonObject3.get("sender").toString());
 				String messengerId = jsonObject4.get("id").toString();
+				// if send message out then return
+				if(messengerId.equals("1529642937274220")) return;
 				Query<Account> q = ofy().load().type(Account.class);
 				q = q.filter("messengerId", messengerId);
 				Account account = q.first().now();
@@ -106,12 +108,14 @@ public class WebHookServlet extends HttpServlet {
 					JSONArray jsonArrayData = new JSONArray(data);
 					JSONObject jsonObjectAccount = new JSONObject(jsonArrayData.get(0).toString());
 					String accountId = jsonObjectAccount.getString("id");
-					log.warning("Account of Id: " + accountId);
+					log.warning("The Account's id: " + accountId);
+					log.warning("The Messenger's id: " + messengerId);
 					Key<Account> key = Key.create(Account.class, Long.parseLong(accountId));
 					account = ofy().load().key(key).now();
 					if (account != null) {
 						account.setMessengerId(messengerId);
 						ofy().save().entities(account);
+						log.warning("The Messenger's id after inserting in database: " + messengerId);
 					}
 
 				}
@@ -123,11 +127,12 @@ public class WebHookServlet extends HttpServlet {
 				if (text == "test") {
 					mes = "Hello boy";
 				} else if (text.startsWith("#verify")) {
-					Matcher matcher = Pattern.compile("(\\d*)").matcher(text);
+					Matcher matcher = Pattern.compile("(\\d+)").matcher(text);
 					int count = 0;
 				    matcher.find();
-					String memberId = matcher.group(1);
-					account.setFbId(memberId);
+					String fbId = matcher.group(1);
+					account.setFbId(fbId);
+					log.warning("Id of the Facebook acc by verify: " + fbId);
 					ofy().save().entities(account);
 					
 				}
@@ -135,9 +140,6 @@ public class WebHookServlet extends HttpServlet {
 				String json = "{   \"recipient\": {     \"id\": \"" + jsonObject4.get("id").toString()
 						+ "\"   },   \"message\": {     \"text\": \"" + mes + "\"   } }";
 				
-
-				
-
 				URL url = new URL(query);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setConnectTimeout(5000);
