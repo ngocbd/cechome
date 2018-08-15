@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet {
 	}
 	
 	callbackURL+= "/callback"; 
-    String facebook = new String(Secret.FacebookOauthBaseURL+"client_id="+Secret.FacebookAppId+"&redirect_uri="+callbackURL+"&scope=public_profile%2Cemail%2Cpublic_profile");
+    String facebook = new String(Secret.FacebookOauthBaseURL+"client_id="+Secret.FacebookAppId+"&redirect_uri="+callbackURL+"&scope=public_profile%2Cemail%2Cpublic_profile%2cuser_link");
     
     
     response.sendRedirect(facebook);
