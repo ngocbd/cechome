@@ -140,8 +140,7 @@
 		<dependency>
 		    <groupId>com.google.cloud</groupId>
 		    <artifactId>google-cloud-bigquery</artifactId>
-		    <version>1.39.0</version>
-		</dependency>
+		    </dependency>
     
     
 		<!-- Test Dependencies -->
