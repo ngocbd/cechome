@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
+import org.jsoup.Connection.Method;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -32,6 +34,7 @@ import com.googlecode.objectify.cmd.Query;
 import net.cec.entities.Account;
 import net.cec.entities.Member;
 import net.cec.entities.MemberPost;
+import net.cec.entities.RequestReview;
 import net.cec.utils.Secret;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
@@ -59,6 +62,43 @@ public class WebHookServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+	}
+	
+	public Account getAccountByMessengerId(String messengerId) throws IOException
+	{
+		
+		Query<Account> q = ofy().load().type(Account.class);
+		q = q.filter("messengerId", messengerId);
+		Account account = q.first().now();
+	
+		if (account == null) {
+			String strJson = Jsoup
+					.connect("https://graph.facebook.com/v3.1/1210242782437366/ids_for_apps?access_token="
+							+ Secret.FacebookPageAccessToken)
+					.ignoreContentType(true).execute().body();
+			JSONObject jsonObjectRoot = new JSONObject(strJson.toString());
+			String data = jsonObjectRoot.get("data").toString();
+			JSONArray jsonArrayData = new JSONArray(data);
+			JSONObject jsonObjectAccount = new JSONObject(jsonArrayData.get(0).toString());
+			String accountId = jsonObjectAccount.getString("id");
+			log.warning("The Account's id: " + accountId);
+			log.warning("The Messenger's id: " + messengerId);
+			Key<Account> key = Key.create(Account.class, Long.parseLong(accountId));
+			account = ofy().load().key(key).now();
+			if (account != null) {
+				account.setMessengerId(messengerId);
+				ofy().save().entities(account);
+				log.warning("The Messenger's id after inserting in database: " + messengerId);
+			}
+			
+			return account;
+		}
+		else
+		{
+			return account;
+			
+		}
+		
 	}
 
 	/**
@@ -91,42 +131,18 @@ public class WebHookServlet extends HttpServlet {
 
 			if (jsonObject3.get("message") != null) {
 				JSONObject jsonObject4 = new JSONObject(jsonObject3.get("sender").toString());
+				
 				String messengerId = jsonObject4.get("id").toString();
-				// if send message out then return
 				if(messengerId.equals("1529642937274220")) return;
-				Query<Account> q = ofy().load().type(Account.class);
-				q = q.filter("messengerId", messengerId);
-				Account account = q.first().now();
-				// https://graph.facebook.com/v3.1/1210242782437366/ids_for_apps?access_token=
-				if (account == null) {
-					String strJson = Jsoup
-							.connect("https://graph.facebook.com/v3.1/1210242782437366/ids_for_apps?access_token="
-									+ Secret.FacebookPageAccessToken)
-							.ignoreContentType(true).execute().body();
-					JSONObject jsonObjectRoot = new JSONObject(strJson.toString());
-					String data = jsonObjectRoot.get("data").toString();
-					JSONArray jsonArrayData = new JSONArray(data);
-					JSONObject jsonObjectAccount = new JSONObject(jsonArrayData.get(0).toString());
-					String accountId = jsonObjectAccount.getString("id");
-					log.warning("The Account's id: " + accountId);
-					log.warning("The Messenger's id: " + messengerId);
-					Key<Account> key = Key.create(Account.class, Long.parseLong(accountId));
-					account = ofy().load().key(key).now();
-					if (account != null) {
-						account.setMessengerId(messengerId);
-						ofy().save().entities(account);
-						log.warning("The Messenger's id after inserting in database: " + messengerId);
-					}
+				Account account = this.getAccountByMessengerId(messengerId);
 
-				}
-				
-				
 				JSONObject jsonObject5 = new JSONObject(jsonObject3.get("message").toString());
 				String text = jsonObject5.get("text").toString().trim().replaceAll("[ ]+", " ");
 				String mes = "Xin chào tôi có thể giúp gì cho bạn.";
 				if (text == "test") {
 					mes = "Hello boy";
-				} else if (text.startsWith("#verify")) {
+				} 
+				else if (text.startsWith("#verify")) {
 					Matcher matcher = Pattern.compile("(\\d+)").matcher(text);
 					int count = 0;
 				    matcher.find();
@@ -134,9 +150,55 @@ public class WebHookServlet extends HttpServlet {
 					account.setFbId(fbId);
 					log.warning("Id of the Facebook acc by verify: " + fbId);
 					ofy().save().entities(account);
+				}
+				else if(text.startsWith("#yccb "))
+				{
+					
+					Matcher matcher = Pattern.compile("(\\d+)").matcher(text);
+					int count = 0;
+				    matcher.find();
+					String postId = matcher.group(1);
+					log.warning("The PostId: " + postId);
+					String memberPostId = "1784461175160264_"+postId;
+					MemberPost memberPostFromKey = null;
+					try {
+						memberPostFromKey = ofy().load().type(MemberPost.class).id(memberPostId).now();
+						log.warning("The MemberPost Id: " + memberPostFromKey.getId());
+						Key<RequestReview> key = Key.create(RequestReview.class, memberPostFromKey.getId());					
+						RequestReview requestReview = ofy().load().key(key).now();
+						if(requestReview==null)
+						{
+							requestReview = new RequestReview();
+							requestReview.setPostid(memberPostFromKey.getId());
+							requestReview.setRequesterId(account.getMessengerId());
+							requestReview.setCreatedDate(Calendar.getInstance().getTime().getTime());
+							requestReview.setStatus(0);
+							requestReview.setPrice(10);
+							ofy().save().entities(requestReview);	
+							mes = "Chúng tôi đã nhận được yêu cầu sửa bài của bạn";
+						}
+						else
+						{
+							mes = "Yêu cầu chữa bài của bạn đang được xử lý";
+						}	
+						
+					} catch (Exception e) {
+						String links = "https://www.facebook.com/groups/cec.edu.vn/permalink/"+postId+"/\n";
+						Jsoup.connect("http://httpsns.appspot.com/queue?name=cecurl")
+						.ignoreContentType(true)
+						.timeout(60 * 1000)
+						.method(Method.POST)
+						.ignoreHttpErrors(true)
+						.requestBody(links)
+						.execute();
+						resp.getWriter().println(links);
+						log.warning("The link: " + links);
+						mes = "Chúng tôi chưa có bài viết này của bạn. Vui lòng đợi trong giây lát rồi gửi lại lệnh";
+					}
+					
 					
 				}
-
+				
 				String json = "{   \"recipient\": {     \"id\": \"" + jsonObject4.get("id").toString()
 						+ "\"   },   \"message\": {     \"text\": \"" + mes + "\"   } }";
 				
@@ -159,7 +221,7 @@ public class WebHookServlet extends HttpServlet {
 				conn.disconnect();
 			}
 		} catch (Exception e) {
-			log.warning(e.getMessage());
+			log.warning(e.getMessage()+e.getStackTrace());
 		}
 
 		resp.getWriter().print("OK");
