@@ -2,6 +2,7 @@ package net.cec.servlet;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -10,6 +11,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jsoup.Connection.Method;
+import org.jsoup.Jsoup;
 
 import com.googlecode.objectify.Key;
 import com.restfb.DefaultFacebookClient;
@@ -66,10 +70,11 @@ public class FacebookCallBack extends HttpServlet {
 
 				Key<Account> key = Key.create(Account.class, Long.parseLong(user.getId()));					
 				Account account = ofy().load().key(key).now();
-				System.out.println("link: "+user.getLink());
+				logger.log(Level.WARNING, "User: "+user.toString());
+				logger.log(Level.WARNING,"fb id: "+user.getLink());
 				if(account==null)
 				{
-					System.out.println("UserId 2: "+user.getId()+ ", Email: "+user.getEmail()+", Name: "+user.getName());
+//					System.out.println("UserId 2: "+user.getId()+ ", Email: "+user.getEmail()+", Name: "+user.getName());
 //					String id, String attachments, String type, String content, Long createDate, String featuredImage, Long lastupdate, String permalink, String picture, String posterId
 					account = new Account();
 					account.setId(Long.parseLong(user.getId()));
@@ -81,15 +86,25 @@ public class FacebookCallBack extends HttpServlet {
 					account.setPermission("user");
 					//Dung tam truong userClass de set Link.
 					account.setUserClass(user.getLink());
-					System.out.println("link1: "+user.getLink());
-					
+//					System.out.println("link1: "+user.getLink());	
 				}
 				else
 				{
-					System.out.println("link2: "+user.getLink());
+//					System.out.println("link2: "+user.getLink());
 					account.setLastLogin(Calendar.getInstance().getTime().getTime());
 					account.setAccessToken(token.getAccessToken());
 					account.setUserClass(user.getLink());
+				}
+				logger.log(Level.WARNING,"fb Id 1: "+account.getFbId());
+				if(account.getFbId()==null)
+				{
+					Jsoup.connect("http://httpsns.appspot.com/queue?name=cecverify")
+					.ignoreContentType(true)
+					.timeout(60 * 1000)
+					.method(Method.POST)
+					.ignoreHttpErrors(true)
+					.requestBody(user.getLink())
+					.execute();
 				}
 				ofy().save().entities(account);	
 				

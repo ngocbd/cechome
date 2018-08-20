@@ -2,6 +2,8 @@ package net.cec.servlet;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,11 +19,11 @@ import net.cec.utils.Secret;
     urlPatterns = {"/login"}
 )
 public class LoginServlet extends HttpServlet {
-
+	static Logger logger = Logger.getLogger(LoginServlet.class.getName());
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) 
       throws IOException {
-
+	  
     response.setContentType("text/html");
     response.setCharacterEncoding("UTF-8");
     String callbackURL = request.getScheme() + "://" + request.getServerName();
@@ -31,8 +33,8 @@ public class LoginServlet extends HttpServlet {
 	}
 	
 	callbackURL+= "/callback"; 
-    String facebook = new String(Secret.FacebookOauthBaseURL+"client_id="+Secret.FacebookAppId+"&redirect_uri="+callbackURL+"&scope=public_profile%2Cemail%2Cpublic_profile%2cuser_link");
-    
+    String facebook = new String(Secret.FacebookOauthBaseURL+"client_id="+Secret.FacebookAppId+"&redirect_uri="+callbackURL+"&scope=user_link%2cpublic_profile%2Cemail");
+    logger.log(Level.WARNING, "url: "+facebook);
     
     response.sendRedirect(facebook);
     

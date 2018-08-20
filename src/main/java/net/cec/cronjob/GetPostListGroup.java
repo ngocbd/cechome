@@ -47,7 +47,7 @@ public class GetPostListGroup extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("text/html");
+		response.setContentType("text/plain");
 		String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
 		FacebookClient fbClient = new DefaultFacebookClient(accessToken,
 				Version.LATEST);
@@ -82,20 +82,15 @@ public class GetPostListGroup extends HttpServlet {
 //		System.out.println("all link: "+links);
 		logger.warning("All Posts links of the group : "+links);
 
-
-		if(memberPost==null)
-		{
-			Jsoup.connect("http://httpsns.appspot.com/queue?name=cecurl")
-			.ignoreContentType(true)
-			.timeout(60 * 1000)
-			.method(Method.POST)
-			.ignoreHttpErrors(true)
-			.requestBody(links)
-			.execute();
-		}
-		
-		
-
+		Jsoup.connect("http://httpsns.appspot.com/queue?name=cecurl")
+		.ignoreContentType(true)
+		.timeout(60 * 1000)
+		.method(Method.POST)
+		.ignoreHttpErrors(true)
+		.requestBody(links)
+		.execute();
+			
+		response.getWriter().println(links);
 	}
 
 	/**
