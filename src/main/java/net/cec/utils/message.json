@@ -1,0 +1,47 @@
+ {
+	"object": "page",
+	"entry": [
+		{
+			"id": "1529642937274220",
+			"time": 1535427874607,
+			"messaging": [
+				{
+					"sender": {
+						"id": "1319961018087768"
+					},
+					"recipient": {
+						"id": "1529642937274220"
+					},
+					"timestamp": 1535427874112,
+					"message": {
+						"mid": "oUbVFRVG1bFr2wv5ctdb_fRzQZagJuf0SYc_OzxfkRuZGKoT8aiSS6vKbj33AHOwSJIzxZ5rZKLOkFplUqXDFQ",
+						"seq": 46998,
+						"text": "#yccb https:\/\/www.facebook.com\/groups\/cec.edu.vn\/permalink\/2143526889253689",
+						"nlp": {
+							"entities": {
+								"url": [
+									{
+										"confidence": 1,
+										"domain": "facebook.com",
+										"value": "https:\/\/www.facebook.com\/groups\/cec.edu.vn\/permalink\/2143526889253689",
+										"_entity": "url",
+										"_body": "https:\/\/www.facebook.com\/groups\/cec.edu.vn\/permalink\/2143526889253689",
+										"_start": 6,
+										"_end": 75
+									}
+								],
+								"sentiment": [
+									{
+										"confidence": 0.80247557024341,
+										"value": "neutral",
+										"_entity": "sentiment"
+									}
+								]
+							}
+						}
+					}
+				}
+			]
+		}
+	]
+} 

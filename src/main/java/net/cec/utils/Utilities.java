@@ -1,5 +1,7 @@
 package net.cec.utils;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,17 +11,28 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+
 import com.google.gson.Gson;
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.cmd.Query;
+
+import net.cec.api.WebHookServlet;
+import net.cec.entities.Account;
 
 
 
 
 
 public class Utilities {
-
-	public static Logger LOGGER = Logger.getLogger(Utilities.class.getName());
+	
+	public static Logger log = Logger.getLogger(Utilities.class.getName());
 
 	public static String serverUrl = "http://crazy-english-community.appspot.com";
 
@@ -63,8 +76,87 @@ public class Utilities {
 	
 	public static SimpleDateFormat sdf2 = new SimpleDateFormat(
 			"dd/MM");
+	/**
+	 * Get the Account from Messenger Id
+	 * @param String messengerId
+	 * @return Account acc
+	 * */
+	public Account getAccountByMessengerId(String messengerId) throws IOException {
+
+		Query<Account> q = ofy().load().type(Account.class);
+		q = q.filter("messengerId", messengerId);
+		Account account = q.first().now();
+
+		if (account == null) {
+			String strJson = Jsoup.connect("https://graph.facebook.com/v3.1/" + messengerId
+					+ "/ids_for_apps?access_token=" + Secret.FacebookPageAccessToken).ignoreContentType(true).execute()
+					.body();
+			JSONObject jsonObjectRoot = new JSONObject(strJson.toString());
+			String data = jsonObjectRoot.get("data").toString();
+			JSONArray jsonArrayData = new JSONArray(data);
+			JSONObject jsonObjectAccount = new JSONObject(jsonArrayData.get(0).toString());
+			String accountId = jsonObjectAccount.getString("id");
+//			log.warning("The Account's id: " + accountId);
+//			log.warning("The Messenger's id: " + messengerId);
+			Key<Account> key = Key.create(Account.class, Long.parseLong(accountId));
+			account = ofy().load().key(key).now();
+			if (account != null) {
+				account.setMessengerId(messengerId);
+				ofy().save().entities(account);
+//				log.warning("The Messenger's id after inserting in database: " + messengerId);
+			}
+		}
+		return account;
+	}
+
+	/**
+	 * Get number from the String
+	 * @param String str
+	 * @return String number
+	 * */
+	public String getNumberFromString(String str) {
+		log.warning("String with number: "+str);
+		Matcher matcher = Pattern.compile("(\\d+)").matcher(str);
+		matcher.find();
+		return matcher.group(1);
+	}
 	
-	
+	/**
+	 * Get the List of the urls from the String
+	 * 
+	 * @param String
+	 *            text
+	 * @return list<String> url
+	 */
+	public List<String> extractUrls(String text) {
+		List<String> containedUrls = new ArrayList<String>();
+		String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+		Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
+		Matcher urlMatcher = pattern.matcher(text);
+
+		while (urlMatcher.find()) {
+			containedUrls.add(text.substring(urlMatcher.start(0), urlMatcher.end(0)));
+		}
+
+		return containedUrls;
+	}
+
+	/**
+	 * Get the real url from the directly url
+	 * @param String directlyUrl
+	 * @return String realUrl
+	 * */
+	public String urlRedirect(String url) {
+		String urlRedirectStr = "";
+		try {
+			urlRedirectStr = Jsoup.connect(url).followRedirects(false).execute().header("Location");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return urlRedirectStr;
+	}
+
 	
 	public enum status {
 		success(1), error(-1), draft(0);
