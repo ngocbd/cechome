@@ -75,120 +75,6 @@ public class WebHookServlet extends HttpServlet {
 
 	}
 
-	public String getNumberFromString(String str) {
-		Matcher matcher = Pattern.compile("(\\d+)").matcher(str);
-		matcher.find();
-		return matcher.group(1);
-	}
-
-	/**
-	 * Get the List of the urls from the String
-	 * 
-	 * @param String
-	 *            text
-	 * @return list<String> url
-	 */
-	public List<String> extractUrls(String text) {
-		List<String> containedUrls = new ArrayList<String>();
-		String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
-		Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
-		Matcher urlMatcher = pattern.matcher(text);
-
-		while (urlMatcher.find()) {
-			containedUrls.add(text.substring(urlMatcher.start(0), urlMatcher.end(0)));
-		}
-
-		return containedUrls;
-	}
-
-	/**
-	 * Get the real url from the directly url
-	 * @param String directlyUrl
-	 * @return String realUrl
-	 * */
-	public String urlRedirect(String url) {
-		String urlRedirectStr = "";
-		try {
-			urlRedirectStr = Jsoup.connect(url).followRedirects(false).execute().header("Location");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return urlRedirectStr;
-	}
-
-	public void sendMessenge(String id, String mes) throws ServletException, IOException {
-		String query = "https://graph.facebook.com/me/messages?access_token=" + Secret.FacebookPageAccessToken;
-		String json = "{   \"recipient\": {     \"id\": \"" + id + "\"   },   \"message\": {     \"text\": \"" + mes
-				+ "\"   } }";
-
-		URL url = new URL(query);
-		log.warning("query: " + query + "\njson str: " + json);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setConnectTimeout(5000);
-		conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-		conn.setDoOutput(true);
-		conn.setDoInput(true);
-		conn.setRequestMethod("POST");
-
-		OutputStream os = conn.getOutputStream();
-		os.write(json.getBytes("UTF-8"));
-		os.close();
-
-		// read the response
-		BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
-
-		in.close();
-		conn.disconnect();
-	}
-
-	public void sendAllMessageToEditors(String reqMes) throws ServletException, IOException {
-
-		Query<Editor> q = ofy().load().type(Editor.class);
-		log.warning("size of editor: " + q.list().size());
-		// String messIdList = "List of messengerId: \n";
-		for (int i = 0; i < q.list().size(); i++) {
-			log.warning("editorId: " + q.list().get(i).getId());
-			long accId = Long.parseLong(q.list().get(i).getId());
-			Key<Account> accKey = Key.create(Account.class, accId);
-			Account accountFromEditor = ofy().load().key(accKey).now();
-			log.warning("messengerId: " + accountFromEditor.getMessengerId());
-			if (accountFromEditor.getMessengerId() != null) {
-				// messIdList += "\n"+accountFromEditor.getMessengerId();
-				this.sendMessenge(accountFromEditor.getMessengerId(), reqMes);
-			}
-
-		}
-		// log.warning(messIdList);
-	}
-
-	public Account getAccountByMessengerId(String messengerId) throws IOException {
-
-		Query<Account> q = ofy().load().type(Account.class);
-		q = q.filter("messengerId", messengerId);
-		Account account = q.first().now();
-
-		if (account == null) {
-			String strJson = Jsoup.connect("https://graph.facebook.com/v3.1/" + messengerId
-					+ "/ids_for_apps?access_token=" + Secret.FacebookPageAccessToken).ignoreContentType(true).execute()
-					.body();
-			JSONObject jsonObjectRoot = new JSONObject(strJson.toString());
-			String data = jsonObjectRoot.get("data").toString();
-			JSONArray jsonArrayData = new JSONArray(data);
-			JSONObject jsonObjectAccount = new JSONObject(jsonArrayData.get(0).toString());
-			String accountId = jsonObjectAccount.getString("id");
-			log.warning("The Account's id: " + accountId);
-			log.warning("The Messenger's id: " + messengerId);
-			Key<Account> key = Key.create(Account.class, Long.parseLong(accountId));
-			account = ofy().load().key(key).now();
-			if (account != null) {
-				account.setMessengerId(messengerId);
-				ofy().save().entities(account);
-				log.warning("The Messenger's id after inserting in database: " + messengerId);
-			}
-		}
-		return account;
-	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -203,12 +89,21 @@ public class WebHookServlet extends HttpServlet {
 		Gson gson = new Gson();
 
 		Hook hook = gson.fromJson(req.getReader(), Hook.class);
-		log.warning("Hook: "+gson.toJson(hook));
-		log.warning(hook.getEntry().get(0).getMessaging().get(0).getMessage().getText());
-		log.warning("size of hook: "+hook.getEntry().size());
-		String content = hook.getEntry().get(0).getMessaging().get(0).getMessage().getText();
-		String senderId = hook.getEntry().get(0).getMessaging().get(0).getSender().getId();
-		log.warning("messengerId: "+senderId);
+		
+		String content = "";
+		String senderId = "";
+		
+		try {
+			log.warning("Hook: "+gson.toJson(hook));
+			log.warning(hook.getEntry().get(0).getMessaging().get(0).getMessage().getText());
+			content = hook.getEntry().get(0).getMessaging().get(0).getMessage().getText();
+			senderId = hook.getEntry().get(0).getMessaging().get(0).getSender().getId();
+			log.warning("size of hook: "+hook.getEntry().size());
+			log.warning("messengerId: "+senderId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return;
+		}
 		String message = "";
 		if(content == "test") 
 		{ 
