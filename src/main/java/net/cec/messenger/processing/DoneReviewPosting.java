@@ -68,16 +68,43 @@ public class DoneReviewPosting extends HttpServlet {
 		
 		String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
 	 	FacebookClient fbClient = new DefaultFacebookClient(accessToken, Version.LATEST);
-		log.warning("postId: "+postId);
-	 	Post post = fbClient .fetchObject( postId, Post.class, Parameter.with("fields", "message, created_time"));
-		log.warning("post: "+post.getId());
+		
+	 	Post post = null;
+		
+		try {
+			log.warning("postId: "+postId);
+			log.warning("post: "+post.getId());
+			post = fbClient .fetchObject( postId, Post.class, Parameter.with("fields", "message, created_time"));
+		} catch (Exception e) {
+			// TODO: handle exception
+			return;
+		}
 	 	if(post != null) 
 		{
 	 		String contentPost = post.getMessage();
 	 		List<String> linkList = utilities.extractUrls(contentPost);
 	 		log.warning("contentPost: "+contentPost+"\nSize of Link: "+linkList.size());
-	 		
-	 		
+	 		String memberPostId = "1784461175160264_"+postId; 
+			MemberPost memberPostFromKey = null; 
+			Key<MemberPost> memberPostkey = Key.create(MemberPost.class, memberPostId); 
+			try 
+			{ 
+				memberPostFromKey = ofy().load().key(memberPostkey).safe(); 
+			}
+			catch(NotFoundException nfe) 
+			{
+				String links = "https://www.facebook.com/groups/cec.edu.vn/permalink/"+postId+"/\n";
+				Jsoup.connect("http://httpsns.appspot.com/queue?name=cecurl")
+				.ignoreContentType(true)
+				.timeout(60 * 1000)
+				.method(Method.POST)
+				.ignoreHttpErrors(true)
+				.requestBody(links)
+				.execute();
+				log.warning("The link: " + links); 
+//				mes = "Chúng tôi chưa có bài viết này của bạn. Vui lòng đợi trong giây lát rồi gửi lại lệnh";
+			 
+			 }
 	 		for(int i=0;i<linkList.size();i++)
 	 		{
 	 			log.warning("Link "+(i+1)+": "+linkList.get(i));
@@ -102,12 +129,10 @@ public class DoneReviewPosting extends HttpServlet {
 	 				requestReview.setReviewDate(post.getCreatedTime().getTime());
 	 				ofy().save().entities(requestReview).now();  
 	 			 	String responeMessage = "Bài của bạn đã được chữa. Link: https://www.facebook.com/groups/cec.edu.vn/permalink/"+reviewPostId;
-//	 				String responeMessage = "Bài của bạn đã được chữa";
 	 			 	this.sendMessage.sendMessenge(requestReview.getRequesterId(), responeMessage);
 	 			}
-	 		}
+	 		} 		 		
 	 	} 
-
 	}
 
 	/**
