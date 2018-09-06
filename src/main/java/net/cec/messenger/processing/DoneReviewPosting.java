@@ -82,7 +82,24 @@ public class DoneReviewPosting extends HttpServlet {
 	 	if(post != null) 
 		{
 	 		String contentPost = post.getMessage();
-	 		List<String> linkList = utilities.extractUrls(contentPost);
+	 		List<String> linkListOrigin = utilities.extractUrls(contentPost);
+	 		List<String> linkList = null;
+	 		for(int i=0;i<linkListOrigin.size();i++)
+	 		{
+	 			Matcher matcherLesson = Pattern.compile("https://www.facebook.com/groups/cec.edu.vn/permalink/").matcher(linkList.get(i)); 
+		 		if (matcherLesson.find())
+		 		{
+		 			linkList.add(linkList.get(i)); 
+		 		}
+		 		else
+		 		{
+		 			Matcher matcherLessonReal = Pattern.compile("https://www.facebook.com/groups/cec.edu.vn/permalink/").matcher(utilities.urlRedirect(linkList.get(i))); 
+		 			if(matcherLessonReal.find())
+		 			{
+		 				linkList.add(utilities.urlRedirect(linkList.get(i)));
+		 			}
+		 		}
+	 		}
 	 		log.warning("contentPost: "+contentPost+"\nSize of Link: "+linkList.size());
 	 		String memberPostId = "1784461175160264_"+postId; 
 			MemberPost memberPostFromKey = null; 
@@ -102,23 +119,13 @@ public class DoneReviewPosting extends HttpServlet {
 				.requestBody(links)
 				.execute();
 				log.warning("The link: " + links); 
-//				mes = "Chúng tôi chưa có bài viết này của bạn. Vui lòng đợi trong giây lát rồi gửi lại lệnh";
-			 
 			 }
+			Account account = utilities.getAccountByMessengerId(senderId);
+			int defaultPrice = 10;
 	 		for(int i=0;i<linkList.size();i++)
 	 		{
 	 			log.warning("Link "+(i+1)+": "+linkList.get(i));
-	 			String link = "";
-	 			Matcher matcherLesson = Pattern.compile("https://www.facebook.com/groups/cec.edu.vn/permalink/").matcher(linkList.get(i)); 
-		 		if (matcherLesson.find())
-		 		{
-		 			link = linkList.get(i); 
-		 		}
-		 		else
-		 		{
-		 			link = utilities.urlRedirect(linkList.get(i));  
-		 		}
-//	 			log.warning("url of review Posting: "+utilities.urlRedirect(linkList.get(i)));
+	 			String link = linkList.get(i); 
 	 			String reviewPostId = utilities.getNumberFromString(link);
 	 			Key<RequestReview> key = Key.create(RequestReview.class, "1784461175160264_"+reviewPostId); 
 	 			RequestReview requestReview = ofy().load().key(key).now(); 
@@ -127,7 +134,10 @@ public class DoneReviewPosting extends HttpServlet {
 	 				requestReview.setEditorId(senderId);
 	 				requestReview.setStatus(2);
 	 				requestReview.setReviewDate(post.getCreatedTime().getTime());
-	 				ofy().save().entities(requestReview).now();  
+	 				
+	 				int money = account.getMoney()+defaultPrice;
+	 				account.setMoney(money);
+	 				ofy().save().entities(account,requestReview);
 	 			 	String responeMessage = "Bài của bạn đã được chữa. Link: https://www.facebook.com/groups/cec.edu.vn/permalink/"+reviewPostId;
 	 			 	this.sendMessage.sendMessenge(requestReview.getRequesterId(), responeMessage);
 	 			}

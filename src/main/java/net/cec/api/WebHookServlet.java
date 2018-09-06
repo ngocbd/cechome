@@ -190,6 +190,18 @@ public class WebHookServlet extends HttpServlet {
 		 }
 		 
 		
+		 /*
+			 * The Member wants to the balance
+			 * code: #balance
+		 */
+		 if(content.startsWith("#balance")) 
+		 {
+			 Queue queue = QueueFactory.getDefaultQueue();
+				queue.add(TaskOptions.Builder.withUrl("/task/posting/balance")
+						.param("bcontent", content)
+						.param("senderid", senderId)
+						); 
+		 }
 		
 		resp.getWriter().print("OK");
 		return;
