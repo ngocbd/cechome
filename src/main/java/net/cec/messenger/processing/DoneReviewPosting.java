@@ -3,6 +3,7 @@ package net.cec.messenger.processing;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
@@ -73,8 +74,9 @@ public class DoneReviewPosting extends HttpServlet {
 		
 		try {
 			log.warning("postId: "+postId);
-			log.warning("post: "+post.getId());
+			
 			post = fbClient .fetchObject( postId, Post.class, Parameter.with("fields", "message, created_time"));
+			log.warning("post: "+post.getId());
 		} catch (Exception e) {
 			// TODO: handle exception
 			return;
@@ -83,20 +85,20 @@ public class DoneReviewPosting extends HttpServlet {
 		{
 	 		String contentPost = post.getMessage();
 	 		List<String> linkListOrigin = utilities.extractUrls(contentPost);
-	 		List<String> linkList = null;
+	 		List<String> linkList = new ArrayList<String>();
 	 		for(int i=0;i<linkListOrigin.size();i++)
 	 		{
-	 			Matcher matcherLesson = Pattern.compile("https://www.facebook.com/groups/cec.edu.vn/permalink/").matcher(linkList.get(i)); 
+	 			Matcher matcherLesson = Pattern.compile("https://www.facebook.com/groups/cec.edu.vn/permalink/").matcher(linkListOrigin.get(i)); 
 		 		if (matcherLesson.find())
 		 		{
-		 			linkList.add(linkList.get(i)); 
+		 			linkList.add(linkListOrigin.get(i)); 
 		 		}
 		 		else
 		 		{
-		 			Matcher matcherLessonReal = Pattern.compile("https://www.facebook.com/groups/cec.edu.vn/permalink/").matcher(utilities.urlRedirect(linkList.get(i))); 
+		 			Matcher matcherLessonReal = Pattern.compile("https://www.facebook.com/groups/cec.edu.vn/permalink/").matcher(utilities.urlRedirect(linkListOrigin.get(i))); 
 		 			if(matcherLessonReal.find())
 		 			{
-		 				linkList.add(utilities.urlRedirect(linkList.get(i)));
+		 				linkList.add(utilities.urlRedirect(linkListOrigin.get(i)));
 		 			}
 		 		}
 	 		}
@@ -122,6 +124,7 @@ public class DoneReviewPosting extends HttpServlet {
 			 }
 			Account account = utilities.getAccountByMessengerId(senderId);
 			int defaultPrice = 10;
+			int sum = 0;
 	 		for(int i=0;i<linkList.size();i++)
 	 		{
 	 			log.warning("Link "+(i+1)+": "+linkList.get(i));
@@ -131,17 +134,35 @@ public class DoneReviewPosting extends HttpServlet {
 	 			RequestReview requestReview = ofy().load().key(key).now(); 
 	 			if(requestReview!=null)
 	 			{
-	 				requestReview.setEditorId(senderId);
-	 				requestReview.setStatus(2);
-	 				requestReview.setReviewDate(post.getCreatedTime().getTime());
+	 				log.warning("request Review Status: "+requestReview.getStatus());
+	 				if(requestReview.getStatus()==1)
+	 				{
+	 					log.warning("request Review Status 1: "+requestReview.getStatus());
+	 					log.warning("EditorId: "+requestReview.getEditorId()+"\nSenderId: "+senderId);
+	 					if(requestReview.getEditorId().equals(senderId))
+		 				{	
+	 						log.warning("request review status 3: "+requestReview.getStatus());
+			 				requestReview.setStatus(2);
+			 				requestReview.setReviewDate(post.getCreatedTime().getTime());
+		 					int money = account.getMoney()+defaultPrice;
+			 				account.setMoney(money);
+			 				sum+=10;
+			 				Account reviewRequestAccount = utilities.getAccountByMessengerId(requestReview.getRequesterId());
+			 				int reviewRequestMoney = reviewRequestAccount.getMoney()-defaultPrice;
+			 				reviewRequestAccount.setMoney(reviewRequestMoney);
+			 				//da sua lai logic. Chi tru tien member khi editor da sua xong. Chua test.
+			 				ofy().save().entities(account,requestReview,reviewRequestAccount);
+			 				log.warning("request Review Status 2: "+requestReview.getStatus());
+		 				}
+		 				
+		 			 	String responeMessage = "Bài của bạn đã được chữa. Link: https://www.facebook.com/groups/cec.edu.vn/permalink/"+reviewPostId;
+		 			 	this.sendMessage.sendMessenge(requestReview.getRequesterId(), responeMessage);
+	 				}
 	 				
-	 				int money = account.getMoney()+defaultPrice;
-	 				account.setMoney(money);
-	 				ofy().save().entities(account,requestReview);
-	 			 	String responeMessage = "Bài của bạn đã được chữa. Link: https://www.facebook.com/groups/cec.edu.vn/permalink/"+reviewPostId;
-	 			 	this.sendMessage.sendMessenge(requestReview.getRequesterId(), responeMessage);
 	 			}
-	 		} 		 		
+	 		}
+	 		String contentendingEditorS = "Bạn nhận được "+sum+" cec từ bài bạn đã chữa.";
+	 		this.sendMessage.sendMessenge(senderId, contentendingEditorS);
 	 	} 
 	}
 

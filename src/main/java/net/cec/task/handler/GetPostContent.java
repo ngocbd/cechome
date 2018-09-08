@@ -3,6 +3,7 @@ package net.cec.task.handler;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +22,8 @@ import com.restfb.types.Post;
 import org.apache.commons.lang3.StringEscapeUtils;
 import net.cec.utils.Utilities;
 import net.cec.entities.*;
+import net.cec.messenger.processing.BalancePosting;
+
 import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.fcs.*;
 /**
@@ -29,7 +32,7 @@ import com.fcs.*;
 @WebServlet("/task/crawl/post")
 public class GetPostContent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	Logger log = Logger.getLogger(GetPostContent.class.getName());  
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -57,20 +60,22 @@ public class GetPostContent extends HttpServlet {
 						Parameter
 								.with("fields",
 										"attachments, message, created_time"));
-
-		
-		String attachmentStr = "";
-		for(int i=0;i<post.getAttachments().getData().size();i++)
-		{
-//			System.out.println("Attachments at "+(i+1)+": "+net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
-			attachmentStr +=StringEscapeUtils.unescapeEcmaScript(net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
-		}
-		System.out.println("hbg: "+attachmentStr);
-
-		
+	
 		if(post != null)
 		{
-
+			String attachmentStr = "";
+			try {
+				for(int i=0;i<post.getAttachments().getData().size();i++)
+				{
+//					System.out.println("Attachments at "+(i+1)+": "+net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
+					attachmentStr +=StringEscapeUtils.unescapeEcmaScript(net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
+				}
+//				System.out.println("hbg: "+attachmentStr);
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.warning("Error: "+e.getMessage());
+				return;
+			}
 			Key<MemberPost> key = Key.create(MemberPost.class, post.getId());					
 			MemberPost memberPost = ofy().load().key(key).now();
 			if(memberPost==null)
@@ -86,7 +91,7 @@ public class GetPostContent extends HttpServlet {
 				memberPost.setPermalink(post.getPermalinkUrl());
 				memberPost.setPicture(post.getFullPicture());
 				memberPost.setPosterId(posterId);
-				
+				 
 				ofy().save().entities(memberPost);	
 				
 				Querify querify = new Querify("cec");

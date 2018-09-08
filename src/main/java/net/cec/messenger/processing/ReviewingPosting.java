@@ -82,7 +82,16 @@ public class ReviewingPosting extends HttpServlet {
 				 log.warning("messengerId: "+accountFromEditor.getMessengerId());
 				 if(accountFromEditor.getMessengerId()!=null) 
 				 { 
-					 this.sendMessage.sendMessenge(accountFromEditor.getMessengerId(), reqMes); 
+					 try
+					 {
+						 this.sendMessage.sendMessenge(accountFromEditor.getMessengerId(), reqMes);
+					 }
+					 catch (Exception e) {
+						 // TODO: handle exception
+						 log.warning("send mgs error: "+e.getMessage());
+						 return;
+					}
+					  
 				 }
 		 	}
 		}	

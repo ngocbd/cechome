@@ -99,10 +99,8 @@ public class ReviewPosting extends HttpServlet {
 				 
 				 	requestReview.setCreatedDate(Calendar.getInstance().getTime().getTime());
 				 	requestReview.setStatus(0); requestReview.setPrice(10);
-				 	int money = account.getMoney()-defaultPrice;
-				 	account.setMoney(money);
-				 	log.warning("Balance: "+money);
-				 	ofy().save().entities(requestReview,account); 
+				 	
+				 	ofy().save().entities(requestReview); 
 				 	mes = "Chúng tôi đã nhận được yêu cầu sửa bài của bạn. Chúng tôi sẽ cập nhật bài viết của bạn trong vài giây"; 
 				}
 				else

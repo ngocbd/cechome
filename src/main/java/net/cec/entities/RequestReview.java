@@ -21,7 +21,7 @@ public class RequestReview {
 	@Unindex
 	private long reviewDate;
 
-	//0: request - 1: editing - 2: done
+	//0: request - 1: editing - 2: done - 3: plus cec for editor
 	@Unindex
 	private int status;
 	
