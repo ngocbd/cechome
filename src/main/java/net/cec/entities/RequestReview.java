@@ -10,14 +10,18 @@ public class RequestReview {
 	private String postid;
 	
 	@Unindex
-	private String editerId;
+	private String editorId;
 	
 	@Unindex
 	private String requesterId;
 	
 	@Unindex
 	private long createdDate;
+	
+	@Unindex
+	private long reviewDate;
 
+	//0: request - 1: editing - 2: done - 3: plus cec for editor
 	@Unindex
 	private int status;
 	
@@ -32,12 +36,20 @@ public class RequestReview {
 		this.postid = postid;
 	}
 
-	public String getEditerId() {
-		return editerId;
+	public String getEditorId() {
+		return editorId;
 	}
 
-	public void setEditerId(String editerId) {
-		this.editerId = editerId;
+	public void setEditorId(String editorId) {
+		this.editorId = editorId;
+	}
+
+	public long getReviewDate() {
+		return reviewDate;
+	}
+
+	public void setReviewDate(long reviewDate) {
+		this.reviewDate = reviewDate;
 	}
 
 	public String getRequesterId() {
