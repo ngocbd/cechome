@@ -80,23 +80,29 @@ public class GetPostContent extends HttpServlet {
 			MemberPost memberPost = ofy().load().key(key).now();
 			if(memberPost==null)
 			{
-//				String id, String attachments, String type, String content, Long createDate, String featuredImage, Long lastupdate, String permalink, String picture, String posterId
-				memberPost = new MemberPost();
-				memberPost.setId(post.getId());
-				memberPost.setAttachments(attachmentStr);
-				memberPost.setType(post.getType());
-				memberPost.setContent(post.getMessage());
-				memberPost.setCreatedDate(post.getCreatedTime().getTime());
-				memberPost.setLastUpdate(Calendar.getInstance().getTime().getTime());
-				memberPost.setPermalink(post.getPermalinkUrl());
-				memberPost.setPicture(post.getFullPicture());
-				memberPost.setPosterId(posterId);
-				 
-				ofy().save().entities(memberPost);	
-				
-				Querify querify = new Querify("cec");
-//				querify.insert(objs);
-				querify.insert(memberPost);
+				try {
+//					String id, String attachments, String type, String content, Long createDate, String featuredImage, Long lastupdate, String permalink, String picture, String posterId
+					memberPost = new MemberPost();
+					memberPost.setId(post.getId());
+					memberPost.setAttachments(attachmentStr);
+					memberPost.setType(post.getType());
+					memberPost.setContent(post.getMessage());
+					memberPost.setCreatedDate(post.getCreatedTime().getTime());
+					memberPost.setLastUpdate(Calendar.getInstance().getTime().getTime());
+					memberPost.setPermalink(post.getPermalinkUrl());
+					memberPost.setPicture(post.getFullPicture());
+					memberPost.setPosterId(posterId);
+					 
+					ofy().save().entities(memberPost);	
+					
+					Querify querify = new Querify("cec");
+//					querify.insert(objs);
+					querify.insert(memberPost);
+				} catch (Exception e) {
+					// TODO: handle exception
+					log.warning("Error: "+e.getMessage());
+				}
+//				
 			}
 		}
 		
