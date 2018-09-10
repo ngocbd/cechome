@@ -1,9 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <jsp:include page="/elements/header.jsp" />
 
+
 <aside>
-	# Giới thiệu về CEC
+	*** Giới thiệu về CEC
 	<image src = "https://storage.googleapis.com/crazy-english-community.appspot.com/images/about.jpg" alt="About CEC"/>
 	CEC is a nongovernmental and nonprofit organization and is activated at October 30th, 2014 that trains real English by using Crazy English method, orients and introduces jobs for Vietnamese student generation.
 
@@ -13,16 +15,16 @@
 	<a href="/about" target = "_blank">Readmore</a>
 </aside>
 
-<aside>Các hoạt động chính của CEC</aside>
-<aside>Các cách tham gia cùng CEC</aside>
+<aside>*** Các hoạt động chính của CEC</aside>
+<aside>*** Các cách tham gia cùng CEC</aside>
 <aside>
-	Video
+	*** Video
 	<div class="fb-video" data-href="https://www.facebook.com/100012576995887/videos/519733341789228" data-width="500" data-show-text="false">
   </div>
 </aside>
 <aside>
-	*
-	WHO WANTS TO BE A MILLIONAIRE?
+	*** Ai la trieu phu ***
+	* WHO WANTS TO BE A MILLIONAIRE?
 	THE PRIZE STRUCTURE
 	The first prize: 1000 CEC 
 	(1000 CEC can be exchanged into phone card worth 200.000 VND)
@@ -53,6 +55,15 @@
 	<a href="https://www.facebook.com/groups/cec.edu.vn/permalink/2039738106299235/" target = "_blank" >Join</a>
 	
 	*video theo cuoc thi : ailatrieuphu
+	<c:forEach items="${altpPosts}" var="altpPost"> 
+			  <article>
+			  <section>${altpPost.createdDate}</section>
+			    <section>${altpPost.content}</section>
+			    <section><div class="fb-video" data-href="${altpPost.picture}" data-width="500" data-show-text="false"></section>
+			    <section>${altpPost.permalink}</section>
+			   	<a rel="author" href="https://cec.net.vn/m/${altpPost.posterId}">${memberIds[altpPost.posterId].name}</a>	    
+			  </article>
+			</c:forEach>
 	
 </aside>
 <jsp:include page="/elements/footer.jsp" />

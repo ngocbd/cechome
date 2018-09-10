@@ -26,10 +26,6 @@ import com.googlecode.objectify.cmd.Query;
 import net.cec.api.WebHookServlet;
 import net.cec.entities.Account;
 
-
-
-
-
 public class Utilities {
 	
 	public static Logger log = Logger.getLogger(Utilities.class.getName());
@@ -76,6 +72,9 @@ public class Utilities {
 	
 	public static SimpleDateFormat sdf2 = new SimpleDateFormat(
 			"dd/MM");
+	
+	
+		
 	/**
 	 * Get the Account from Messenger Id
 	 * @param String messengerId
@@ -241,7 +240,7 @@ public class Utilities {
 	}
 
 	/**
-	 * BÄƒm nhá»� list thÃ nh list chá»©a cÃ¡c list nhá»� hÆ¡n
+	 * BÄƒm nhá»� list thÃ nh list chá»©a cÃ¡c list nhá»� hÆ¡n
 	 **/
 	public static <T> List<List<T>> chopped(List<T> list, final int L) {
 		List<List<T>> parts = new ArrayList<List<T>>();

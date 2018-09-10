@@ -34,7 +34,7 @@ import net.cec.entities.*;
 @WebServlet("/cron/crawl/links")
 public class GetPostListGroup extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	static Logger logger = Logger.getLogger(GetPostListGroup.class.getName());
+	static Logger log = Logger.getLogger(GetPostListGroup.class.getName());
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -65,22 +65,38 @@ public class GetPostListGroup extends HttpServlet {
 //		response.getWriter().println("id: "+listPost.getData().get(0).toString());
 		String links = "";
 		MemberPost memberPost = null;
-		for(int i=0;i<listPost.getData().size();i++)
+		try 
 		{
-			String postGroupId = listPost.getData().get(i).toString();
-			String postId = postGroupId.substring(postGroupId.indexOf("_")+1, postGroupId.length()-2);
-//			System.out.println("Id "+(i+1)+" of Post: "+ postId);
-			Key<MemberPost> key = Key.create(MemberPost.class, postId);
-			memberPost = ofy().load().key(key).now();
-			if(memberPost==null)
+			int count = 0;
+			log.warning("size of listPost: "+listPost.getData().size());
+			for(int i=0;i<listPost.getData().size();i++)
 			{
-				links += "https://www.facebook.com/groups/cec.edu.vn/permalink/"+postId+"/\n";
+				String postGroupId = listPost.getData().get(i).toString();
+				log.warning("postGroupId: "+postGroupId);
+				String postId = postGroupId.substring(postGroupId.indexOf("_")+1, postGroupId.length()-2);
+				log.warning("postId: "+postId);
+				String postIdInDb = "1784461175160264_"+postId;
+//				System.out.println("Id "+(i+1)+" of Post: "+ postId);
+				Key<MemberPost> key = Key.create(MemberPost.class, postIdInDb);
+				memberPost = ofy().load().key(key).now();
+				if(memberPost==null)
+				{
+					links += "https://www.facebook.com/groups/cec.edu.vn/permalink/"+postId+"/\n";
+					count +=1;
+				}
+				
+				//create string 100links
 			}
-			//create string 100links
+			log.warning("sum of the link: "+count);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.warning("errer when get size of links: "+e.getMessage());
 		}
 		
+		
 //		System.out.println("all link: "+links);
-		logger.warning("All Posts links of the group : "+links);
+		log.warning("All Posts links of the group : "+links);
 
 		Jsoup.connect("http://httpsns.appspot.com/queue?name=cecurl")
 		.ignoreContentType(true)

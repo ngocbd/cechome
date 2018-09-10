@@ -84,18 +84,21 @@ public class ReviewingPosting extends HttpServlet {
 				 { 
 					 try
 					 {
-						 this.sendMessage.sendMessenge(accountFromEditor.getMessengerId(), reqMes);
+					 	 this.sendMessage.sendMessenge(accountFromEditor.getMessengerId(), reqMes);
 					 }
 					 catch (Exception e) {
-						 // TODO: handle exception
-						 log.warning("send mgs error: "+e.getMessage());
-						 return;
-					}
-					  
+					 	 // TODO: handle exception
+					 	 log.warning("send mgs error: "+e.getMessage());
+					 	 return;
+					 } 
 				 }
 		 	}
 		}	
-		this.sendMessage.sendMessenge(senderId, mes);
+		if(mes !=null || mes !=null)
+		{
+			this.sendMessage.sendMessenge(senderId, mes);
+		}
+		
 	}
 
 	/**

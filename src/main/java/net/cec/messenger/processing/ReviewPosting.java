@@ -98,9 +98,10 @@ public class ReviewPosting extends HttpServlet {
 				 	}
 				 
 				 	requestReview.setCreatedDate(Calendar.getInstance().getTime().getTime());
-				 	requestReview.setStatus(0); requestReview.setPrice(10);
-				 	
-				 	ofy().save().entities(requestReview); 
+				 	requestReview.setStatus(0); 
+				 	requestReview.setPrice(10);
+				 
+				 	ofy().save().entities(requestReview,account); 
 				 	mes = "Chúng tôi đã nhận được yêu cầu sửa bài của bạn. Chúng tôi sẽ cập nhật bài viết của bạn trong vài giây"; 
 				}
 				else
@@ -112,20 +113,26 @@ public class ReviewPosting extends HttpServlet {
 				 	String reqMes = "Bài yêu cầu được chữa. Nếu bạn chữa bài này,hãy gửi lại một mã với nội dung: #reviewing https://www.facebook.com/groups/cec.edu.vn/permalink/" +postId; 
 				 	log.warning("size of editor: "+q.list().size()); 
 //				 	String messIdList = "List of messengerId: \n"; 
-				 	for(int i = 0;i<q.list().size();i++) 
+				 	try 
 				 	{
-						 log.warning("editorId: "+q.list().get(i).getId()); 
-						 long accId = Long.parseLong(q.list().get(i).getId()); 
-						 Key<Account> accKey = Key.create(Account.class, accId);  
-						 Account accountFromEditor = ofy().load().key(accKey).now();
-//						 log.warning("messengerId: "+accountFromEditor.getMessengerId());
-						 if(accountFromEditor!=null) 
-						 { 
-//							 messIdList += "\n"+accountFromEditor.getMessengerId();
-							 log.warning("messengerId: "+accountFromEditor.getMessengerId());
-							 this.sendMessage.sendMessenge(accountFromEditor.getMessengerId(), reqMes); 
-						 }
-				 	}
+				 		for(int i = 0;i<q.list().size();i++) 
+					 	{
+							 log.warning("editorId: "+q.list().get(i).getId()); 
+							 long accId = Long.parseLong(q.list().get(i).getId()); 
+							 Key<Account> accKey = Key.create(Account.class, accId);  
+							 Account accountFromEditor = ofy().load().key(accKey).now();
+//							 log.warning("messengerId: "+accountFromEditor.getMessengerId());
+							 if(accountFromEditor!=null) 
+							 { 
+//								 messIdList += "\n"+accountFromEditor.getMessengerId();
+								 log.warning("messengerId: "+accountFromEditor.getMessengerId());
+								 this.sendMessage.sendMessenge(accountFromEditor.getMessengerId(), reqMes); 
+							 }
+					 	}
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+				 	
 				}
 			}
 			else
@@ -134,7 +141,11 @@ public class ReviewPosting extends HttpServlet {
 			}
 			
 		}
-		this.sendMessage.sendMessenge(senderId, mes);
+		if(mes !="" || mes ==null)
+		{
+			this.sendMessage.sendMessenge(senderId, mes);
+		}
+		
 	}
 
 	/**
