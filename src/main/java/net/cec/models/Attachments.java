@@ -7,11 +7,12 @@ public class Attachments {
 	public Attachments() {
 	}
 
-	public Attachments(String description, String title, String url, String type) {
+	public Attachments(String description, String title, String url, String type, Media media) {
 		this.description = description;
 		this.title = title;
 		this.type = type;
 		this.url = url;
+		this.media = media;
 	}
 
 	private String description;
@@ -21,6 +22,8 @@ public class Attachments {
 	private String url;
 
 	private String type;
+	
+	private Media media;
 
 	public String getDescription() {
 		return description;
@@ -54,6 +57,14 @@ public class Attachments {
 		this.type = type;
 	}
 	
+	public Media getMedia() {
+		return media;
+	}
+
+	public void setMedia(Media media) {
+		this.media = media;
+	}
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

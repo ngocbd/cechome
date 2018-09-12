@@ -9,9 +9,7 @@
 	rel="stylesheet" id="bootstrap-css">
 <script
 	src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-<link
-	href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
-	rel="stylesheet">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 </head>
 <body>
 	<jsp:include page="/elements/header.jsp" />
@@ -28,28 +26,13 @@
 					</div>
 					<div class="info">
 						<div class="title">
-							<a target="_blank" href="https://scripteden.com/">${member.getName()}</a>
+							<a target="_blank" href="https://m.me/${member.getId()}">${member.getName()}</a>
 						</div>
-						<div class="desc">
-							<i class="fas fa-check-circle"></i>Passionate designer
-						</div>
-						<div class="desc">Curious developer</div>
-						<div class="desc">Tech geek</div>
+						
 					</div>
 					<div class="bottom">
-						<a class="btn btn-primary btn-twitter btn-sm"
-							href="https://twitter.com/webmaniac"> <i
-							class="fa fa-twitter"></i>
-						</a> <a class="btn btn-danger btn-sm" rel="publisher"
-							href="https://plus.google.com/+ahmshahnuralam"> <i
-							class="fa fa-google-plus"></i>
-						</a> <a class="btn btn-primary btn-sm" rel="publisher"
-							href="https://plus.google.com/shahnuralam"> <i
-							class="fa fa-facebook"></i>
-						</a> <a class="btn btn-warning btn-sm" rel="publisher"
-							href="https://plus.google.com/shahnuralam"> <i
-							class="fa fa-behance"></i>
-						</a>
+						<a class="fab fa-facebook" style="font-size:48px;" href="//facebook.com/profile.php?id=${member.getId()}" target = "_blank"></a>
+						<a class="fab fa-facebook-messenger" style="font-size:60px;color:blue;" href="//m.me/${member.getId()}" target = "_blank"></a>
 					</div>
 				</div>
 
@@ -59,6 +42,12 @@
 	</div>
 	<div class="container">
 		<div class="row">
+			<c:if test = "${fbExist}">
+         		<section>Introduction: ${intro}</section>
+         		<section>Level: ${level}</section>
+         		<section>Dedication: ${dedication}</section>
+         		<section>Streak: ${streak}</section>
+      		</c:if>
 			<c:forEach items="${posts}" var="post"> 
 			  <article>
 			  <section>${post.createdDate}</section>

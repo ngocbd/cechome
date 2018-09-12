@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+  <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -25,10 +26,10 @@
 		<div class="row">
 			
 			  <article>
-			  <section>${post.id}</section>
+			  	<!-- <section>${post.id}</section> -->
 			    <section>${post.content}</section>
-			    <section>${post.picture}</section>
-			    <section>${post.permalink}</section>			    
+			    <section>${display}</section>	
+			    <section><div class="fb-comments" data-href="https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(post.id, '1784461175160264_', '')}" data-numposts="5"></div></section>		    
 			  </article>
 			
 		</div>

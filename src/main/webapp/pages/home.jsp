@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <jsp:include page="/elements/header.jsp" />
 
 
@@ -23,6 +24,7 @@
   </div>
 </aside>
 <aside>
+<pre>
 	*** Ai la trieu phu ***
 	* WHO WANTS TO BE A MILLIONAIRE?
 	THE PRIZE STRUCTURE
@@ -56,15 +58,28 @@
 	
 	*video theo cuoc thi : ailatrieuphu
 	<c:forEach items="${altpPosts}" var="altpPost"> 
-			  <article>
-			  <section>${altpPost.createdDate}</section>
-			    <section>${altpPost.content}</section>
-			    <section><div class="fb-video" data-href="${altpPost.picture}" data-width="500" data-show-text="false"></section>
-			    <section>${altpPost.permalink}</section>
-			   	<a rel="author" href="https://cec.net.vn/m/${altpPost.posterId}">${memberIds[altpPost.posterId].name}</a>	    
-			  </article>
-			</c:forEach>
+	  <article>
+	  	<section> long datetime type ${altpPost.createdDate}</section>
+	    <section>${altpPost.content}</section>
+	    <section><div class="fb-video" data-href="${altpPost.picture}" data-width="500" data-show-text="false"></section>
+	    <section><a href = "https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(altpPost.id, '1784461175160264_', '')}" target = "_blank">${fn:replace(altpPost.id, '1784461175160264_', '')}</a></section>
+	   	<section><a rel="author" href="https://cec.net.vn/m/${altpPost.posterId}">${memberIds[altpPost.posterId].name}</a></section>	    
+	  </article>
+	</c:forEach>
 	
+	
+	*** Hành trình chinh phục tiếng anh
+	<c:forEach items="${day90Posts}" var="day90Post"> 
+	  <article>
+	  	<section> long datetime type ${day90Post.createdDate}</section>
+	    <section>${day90Post.content}</section>
+	    <section><div class="fb-video" data-href="${day90Post.picture}" data-width="500" data-show-text="false"></section>
+	    <section><a href = "https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(day90Post.id, '1784461175160264_', '')}" target = "_blank">${fn:replace(day90Post.id, '1784461175160264_', '')}</a></section>
+	   	<section><a rel="author" href="https://cec.net.vn/m/${day90Post.posterId}">${memberIds[day90Post.posterId].name}</a></section>	    
+	  </article>
+	</c:forEach>
+	
+</pre>	
 </aside>
 <jsp:include page="/elements/footer.jsp" />
 <!-- 

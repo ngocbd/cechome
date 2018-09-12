@@ -4,6 +4,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +33,7 @@ import net.cec.entities.MemberPost;
 @WebServlet(name = "ProfileServlet", urlPatterns = { "/m/*" })
 public class ProfileServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	static Logger log = Logger.getLogger(ProfileServlet.class.getName());
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -61,13 +62,35 @@ public class ProfileServlet extends HttpServlet {
 		response.setContentType("text/html");
 		Key<Member> key = Key.create(Member.class, memberId);
 		Member member = ofy().load().key(key).now();
-
+		log.warning("memberId: "+memberId);
+							
+		Account account = ofy().load().type(Account.class).filter("fbId",memberId).first().now();
+		String intro = ""; 
+		int level = 0, dedication = 0, streak = 0;
+		boolean fbExist = false;
+		log.warning("Gia tri cua fbExist: "+fbExist);
+		if(account != null)
+		{
+			log.warning("streak: "+account.getDaily());
+			intro = account.getIntroduce();
+			level = account.getLevel();
+			dedication = account.getDedication();
+			streak = account.getDaily();
+			fbExist = true;
+			log.warning("Gia tri cua fbExist sau khi check acc khac null: "+fbExist);
+		}
+		
 		Query<MemberPost> q = ofy().load().type(MemberPost.class);
 		q = q.filter("posterId", memberId);
 		List<MemberPost> posts = q.list();
 
 		request.setAttribute("member", member);
 		request.setAttribute("posts", posts);
+		request.setAttribute("intro", intro);
+		request.setAttribute("level", level);
+		request.setAttribute("dedication", dedication);
+		request.setAttribute("streak", streak);
+		request.setAttribute("fbExist", fbExist);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/profile.jsp");
 		try {
 			dispatcher.forward(request, response);

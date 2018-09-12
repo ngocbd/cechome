@@ -45,7 +45,9 @@ public class GetPostContent extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		//id = id of posting
 		String strId = request.getParameter("id");
+		//posterid = fbId
 		String posterId = request.getParameter("posterid");
 		response.setContentType("text/html");
 		String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
@@ -80,6 +82,7 @@ public class GetPostContent extends HttpServlet {
 	//					System.out.println("Attachments at "+(i+1)+": "+net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
 						attachmentStr +=StringEscapeUtils.unescapeEcmaScript(net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
 					}
+					log.warning("Attachments: "+attachmentStr);
 				} catch (Exception e) {
 					// TODO: handle exception
 					log.warning("Error of the attachment: "+e.getMessage());

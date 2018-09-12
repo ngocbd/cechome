@@ -33,7 +33,7 @@ import net.cec.task.handler.GetPostContent;
     urlPatterns = {"/"}
 )
 public class HomeServlet extends HttpServlet {
-	static Logger log = Logger.getLogger(GetPostContent.class.getName());   
+	static Logger log = Logger.getLogger(HomeServlet.class.getName());   
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -60,7 +60,6 @@ public class HomeServlet extends HttpServlet {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    
     List<MemberPost> altpPosts=  new ArrayList<MemberPost>(ofy().load().type(MemberPost.class).ids(idAltpList).values()); 
     request.setAttribute("altpPosts", altpPosts);
     List<String> memberListID = new ArrayList<>();
@@ -68,13 +67,40 @@ public class HomeServlet extends HttpServlet {
 		MemberPost memberPost = (MemberPost) iterator.next();
 		log.warning("attachment: "+memberPost.getAttachments().getUrl());
 		memberPost.setPicture(memberPost.getAttachments().getUrl());
-		memberListID.add(memberPost.getPosterId());
-		
+		memberListID.add(memberPost.getPosterId());	
 	}
-    
     Map<String, Member> ids = ofy().load().type(Member.class).ids(memberListID);
     request.setAttribute("memberIds", ids);
     log.warning("length of altpPosts: "+altpPosts.size());
+    
+    List<String> idDay90List = new ArrayList<String>();
+    try {
+		TableResult resultDay90 = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Dd]ay \\d+/\\d+') = true limit 10");
+		for (FieldValueList row :resultDay90.iterateAll()) 
+		{
+	        log.warning("id of Days 90 content: "+row.get("id").getStringValue());
+	        idDay90List.add(row.get("id").getStringValue());
+		}
+	} catch (JobException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    List<MemberPost> day90Posts=  new ArrayList<MemberPost>(ofy().load().type(MemberPost.class).ids(idDay90List).values()); 
+    request.setAttribute("day90Posts", day90Posts);
+    List<String> memberDay90ListID = new ArrayList<>();
+    for (Iterator iterator = day90Posts.iterator(); iterator.hasNext();) {
+		MemberPost memberPost = (MemberPost) iterator.next();
+		log.warning("attachment: "+memberPost.getAttachments().getUrl());
+		memberPost.setPicture(memberPost.getAttachments().getUrl());
+		memberDay90ListID.add(memberPost.getPosterId());	
+	}
+    Map<String, Member> day90Ids = ofy().load().type(Member.class).ids(memberDay90ListID);
+    request.setAttribute("day90Ids", day90Ids);
+    
+    
     try {
 		dispatcher.forward(request, response);
 	} catch (ServletException e) {
@@ -83,6 +109,6 @@ public class HomeServlet extends HttpServlet {
 	}//method may be include or forward      
     
     
-
+//SELECT content FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Dd]ay \d+/\d+') = true limit 10
   }
 }

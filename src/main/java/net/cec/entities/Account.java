@@ -132,7 +132,7 @@ public class Account {
 	private String badge;
 	
 	@Since(2.0)
-	@Unindex
+	@Index
 	private String fbId;
 	
 	@Since(2.0)
