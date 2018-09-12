@@ -75,10 +75,20 @@
 	    <section>${day90Post.content}</section>
 	    <section><div class="fb-video" data-href="${day90Post.picture}" data-width="500" data-show-text="false"></section>
 	    <section><a href = "https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(day90Post.id, '1784461175160264_', '')}" target = "_blank">${fn:replace(day90Post.id, '1784461175160264_', '')}</a></section>
-	   	<section><a rel="author" href="https://cec.net.vn/m/${day90Post.posterId}">${memberIds[day90Post.posterId].name}</a></section>	    
+	   	<section><a rel="author" href="https://cec.net.vn/m/${day90Post.posterId}">${day90Ids[day90Post.posterId].name}</a></section>	    
 	  </article>
 	</c:forEach>
 	
+	*** Săn Tây Events 
+	<c:forEach items="${santayPosts}" var="santayPost"> 
+	  <article>
+	  	<section> long datetime type ${santayPost.createdDate}</section>
+	    <section>${santayPost.content}</section>
+	    <section><div class="fb-video" data-href="${santayPost.picture}" data-width="500" data-show-text="false"></section>
+	    <section><a href = "https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(santayPost.id, '1784461175160264_', '')}" target = "_blank">${fn:replace(santayPost.id, '1784461175160264_', '')}</a></section>
+	   	<section><a rel="author" href="https://cec.net.vn/m/${santayPost.posterId}">${sanTayIds[santayPost.posterId].name}</a></section>	    
+	  </article>
+	</c:forEach>
 </pre>	
 </aside>
 <jsp:include page="/elements/footer.jsp" />

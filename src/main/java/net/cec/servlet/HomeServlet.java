@@ -75,7 +75,7 @@ public class HomeServlet extends HttpServlet {
     
     List<String> idDay90List = new ArrayList<String>();
     try {
-		TableResult resultDay90 = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Dd]ay \\d+/\\d+') = true limit 10");
+		TableResult resultDay90 = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Dd][Aa][Yy] \\d+/\\d+') = true and length(id) < 40 limit 10");
 		for (FieldValueList row :resultDay90.iterateAll()) 
 		{
 	        log.warning("id of Days 90 content: "+row.get("id").getStringValue());
@@ -99,6 +99,34 @@ public class HomeServlet extends HttpServlet {
 	}
     Map<String, Member> day90Ids = ofy().load().type(Member.class).ids(memberDay90ListID);
     request.setAttribute("day90Ids", day90Ids);
+    
+    List<String> idSanTayList = new ArrayList<String>();
+    try {
+		TableResult santayResult = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Ss][Ăă][Nn] [Tt][Ââ][Yy]') = true and length(id) < 40 limit 10");
+		for (FieldValueList row :santayResult.iterateAll()) 
+		{
+	        log.warning("id of san tay content: "+row.get("id").getStringValue());
+	        idSanTayList.add(row.get("id").getStringValue());
+		}
+	} catch (JobException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    List<MemberPost> santayPosts=  new ArrayList<MemberPost>(ofy().load().type(MemberPost.class).ids(idSanTayList).values()); 
+    request.setAttribute("santayPosts", santayPosts);
+    List<String> memberSantayListID = new ArrayList<>();
+    for (Iterator iterator = santayPosts.iterator(); iterator.hasNext();) {
+		MemberPost memberPost = (MemberPost) iterator.next();
+		log.warning("attachment: "+memberPost.getAttachments().getUrl());
+		memberPost.setPicture(memberPost.getAttachments().getUrl());
+		memberSantayListID.add(memberPost.getPosterId());	
+	}
+    Map<String, Member> sanTayIds = ofy().load().type(Member.class).ids(memberSantayListID);
+    request.setAttribute("sanTayIds", sanTayIds);
+    log.warning("length of santayPosts: "+santayPosts.size());
     
     
     try {
