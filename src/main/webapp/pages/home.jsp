@@ -89,6 +89,20 @@
 	   	<section><a rel="author" href="https://cec.net.vn/m/${santayPost.posterId}">${sanTayIds[santayPost.posterId].name}</a></section>	    
 	  </article>
 	</c:forEach>
+	
+	*** LiveStream Videos 
+	<c:forEach items="${livestreamPosts}" var="livestreamPost"> 
+	  <article>
+	  	<section> long datetime type ${livestreamPost.createdDate}</section>
+	    <section>${livestreamPost.content}</section>
+	    <section><div class="fb-video" data-href="${livestreamPost.picture}" data-width="500" data-show-text="false"></section>
+	    <section><a href = "https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(livestreamPost.id, '1784461175160264_', '')}" target = "_blank">${fn:replace(livestreamPost.id, '1784461175160264_', '')}</a></section>
+	   	<section>posterId: ${livestreamPost.posterId}</section>
+	   	
+	   	<section>name of poster: ${livestreamIds["100004179341337"].name}</section>
+	   	<section><a rel="author" href="https://cec.net.vn/m/${livestreamPost.posterId}">${livestreamIds[livestreamPost.posterId].name}</a></section>	    
+	  </article>
+	</c:forEach>
 </pre>	
 </aside>
 <jsp:include page="/elements/footer.jsp" />

@@ -97,6 +97,7 @@ public class MemberPost {
 	}
 
 	public void setAttachments(String attachments) {
+		
 		this.attachments = attachments;
 	}
 

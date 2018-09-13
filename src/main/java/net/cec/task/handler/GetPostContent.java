@@ -80,13 +80,19 @@ public class GetPostContent extends HttpServlet {
 					for(int i=0;i<post.getAttachments().getData().size();i++)
 					{
 	//					System.out.println("Attachments at "+(i+1)+": "+net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
-						attachmentStr +=StringEscapeUtils.unescapeEcmaScript(net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
+						if(post.getAttachments().getData().get(i).getDescription()!=null)
+						{
+							post.getAttachments().getData().get(i).setDescription(post.getAttachments().getData().get(i).getDescription().replaceAll("\"", "'"));
+							attachmentStr +=StringEscapeUtils.unescapeEcmaScript(net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
+						}
+						
 					}
 					log.warning("Attachments: "+attachmentStr);
 				} catch (Exception e) {
 					// TODO: handle exception
 					log.warning("Error of the attachment: "+e.getMessage());
 				}
+				
 				memberPost = new MemberPost();
 				memberPost.setId(post.getId());
 				memberPost.setAttachments(attachmentStr);

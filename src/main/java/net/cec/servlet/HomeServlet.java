@@ -26,6 +26,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import net.cec.entities.Account;
 import net.cec.entities.Member;
 import net.cec.entities.MemberPost;
+import net.cec.models.Attachments;
 import net.cec.task.handler.GetPostContent;
 
 @WebServlet(
@@ -43,8 +44,10 @@ public class HomeServlet extends HttpServlet {
     response.setCharacterEncoding("UTF-8");
 
     RequestDispatcher dispatcher=request.getRequestDispatcher("/pages/home.jsp");  
-  //servlet2 is the url-pattern of the second servlet  
-  //SELECT id FROM `crazy-english-community.cec.MemberPost` where (content like '%#LESSON%' or content like '%#lesson%') and length(id) < 40 LIMIT 1000 
+
+    /*
+     * Get top 10 Altp Videos
+     * */
     List<String> idAltpList = new ArrayList<String>();
     try {
 		TableResult result = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where (content like '%#LESSON%' or content like '%#lesson%') and length(id) < 40 LIMIT 10 ");
@@ -73,6 +76,9 @@ public class HomeServlet extends HttpServlet {
     request.setAttribute("memberIds", ids);
     log.warning("length of altpPosts: "+altpPosts.size());
     
+    /*
+     * Get top 10 90 days Videos
+     * */
     List<String> idDay90List = new ArrayList<String>();
     try {
 		TableResult resultDay90 = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Dd][Aa][Yy] \\d+/\\d+') = true and length(id) < 40 limit 10");
@@ -100,6 +106,9 @@ public class HomeServlet extends HttpServlet {
     Map<String, Member> day90Ids = ofy().load().type(Member.class).ids(memberDay90ListID);
     request.setAttribute("day90Ids", day90Ids);
     
+    /*
+     * Get top 10 San Tay Videos
+     * */
     List<String> idSanTayList = new ArrayList<String>();
     try {
 		TableResult santayResult = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Ss][Ăă][Nn] [Tt][Ââ][Yy]') = true and length(id) < 40 limit 10");
@@ -128,6 +137,44 @@ public class HomeServlet extends HttpServlet {
     request.setAttribute("sanTayIds", sanTayIds);
     log.warning("length of santayPosts: "+santayPosts.size());
     
+    /*
+     * Get top 10 live stream Videos
+     * */
+    List<String> idLivestreamList = new ArrayList<String>();
+    try {
+		TableResult livestreamResult = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Ll][Ii][Vv][Ee][Ss][Tt][Rr][Ee][Aa][Mm]') = true and length(id) < 40 limit 10");
+		for (FieldValueList row :livestreamResult.iterateAll()) 
+		{
+			log.warning("id of live stream content: "+row.get("id").getStringValue());
+	        idLivestreamList.add(row.get("id").getStringValue());    
+		}
+	} catch (JobException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    List<MemberPost> livestreamPosts1=  new ArrayList<MemberPost>(ofy().load().type(MemberPost.class).ids(idLivestreamList).values()); 
+    //create livestreamPost list to filter the post don't contain video.
+    List<MemberPost> livestreamPosts = new ArrayList<MemberPost>();
+    List<String> memberLivestreamListID = new ArrayList<>();
+    for (Iterator iterator = livestreamPosts1.iterator(); iterator.hasNext();) {
+		MemberPost memberPost = (MemberPost) iterator.next();
+		log.warning(": "+memberPost.getAttachments());
+		if(memberPost.getAttachments().getType().equals("video_inline"))
+		{
+			memberPost.setPicture(memberPost.getAttachments().getUrl());
+			livestreamPosts.add(memberPost);
+			memberLivestreamListID.add(memberPost.getPosterId());
+		}	
+	}
+    request.setAttribute("livestreamPosts", livestreamPosts);
+    Map<String, Member> livestreamIds = ofy().load().type(Member.class).ids(memberLivestreamListID);
+    request.setAttribute("livestreamIds", livestreamIds);
+    log.warning("idLiveStreamList: "+ idLivestreamList.size());
+    
+    
     
     try {
 		dispatcher.forward(request, response);
@@ -137,6 +184,5 @@ public class HomeServlet extends HttpServlet {
 	}//method may be include or forward      
     
     
-//SELECT content FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Dd]ay \d+/\d+') = true limit 10
   }
 }

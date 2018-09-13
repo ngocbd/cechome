@@ -8,7 +8,7 @@ public class Attachments {
 	}
 
 	public Attachments(String description, String title, String url, String type, Media media) {
-		this.description = description;
+		this.description = description.replaceAll("\"", "\'");
 		this.title = title;
 		this.type = type;
 		this.url = url;
@@ -30,7 +30,8 @@ public class Attachments {
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		//replace " to ' because when convert to json, " make the description error.
+		this.description = description.replaceAll("\"", "\'");
 	}
 
 	public String getTitle() {
