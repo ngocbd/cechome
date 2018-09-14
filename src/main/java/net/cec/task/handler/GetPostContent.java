@@ -106,7 +106,7 @@ public class GetPostContent extends HttpServlet {
 				
 				ofy().save().entities(memberPost);	
 				
-				Querify querify = new Querify("cec");
+				Querify querify = Querify.getInstance("cec");
 //				querify.insert(objs);
 				querify.insert(memberPost);
 			}
@@ -124,7 +124,7 @@ public class GetPostContent extends HttpServlet {
 	}
 	
 	public static void main(String[] args) {
-		Querify.getInstance().createTable(MemberPost.class);
+		Querify.getInstance("cec").createTable(MemberPost.class);
 		
 	}
 

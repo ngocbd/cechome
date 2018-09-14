@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.googlecode.objectify.Key;
 import com.restfb.DefaultFacebookClient;
+import com.restfb.DefaultJsonMapper;
+import com.restfb.ETagWebRequestor;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
 import com.restfb.Version;
@@ -59,7 +61,8 @@ public class TokenFilter implements Filter {
 		{
 			
 			try {
-				DefaultFacebookClient client = new DefaultFacebookClient(cookieToken,Version.LATEST);
+				ETagWebRequestor webRequestor = new ETagWebRequestor();
+				FacebookClient	client = new DefaultFacebookClient(cookieToken,webRequestor,new DefaultJsonMapper(),Version.VERSION_3_1);
 				User user = client.fetchObject("/me", User.class, Parameter.with("fields",
 					"email,name"));
 				 request.setAttribute("User",user);

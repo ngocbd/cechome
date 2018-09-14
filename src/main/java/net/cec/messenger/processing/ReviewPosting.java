@@ -94,7 +94,8 @@ public class ReviewPosting extends HttpServlet {
 				 	
 				 	if(account.getMessengerId()!=null) 
 				 	{
-				 		requestReview.setRequesterId(account.getMessengerId()); 
+				 		requestReview.setRequesterMessengerId(account.getMessengerId()); 
+				 		requestReview.setRequesterAccountId(account.getId()+"");
 				 	}
 				 
 				 	requestReview.setCreatedDate(Calendar.getInstance().getTime().getTime());
@@ -103,12 +104,6 @@ public class ReviewPosting extends HttpServlet {
 				 
 				 	ofy().save().entities(requestReview,account); 
 				 	mes = "Chúng tôi đã nhận được yêu cầu sửa bài của bạn. Chúng tôi sẽ cập nhật bài viết của bạn trong vài giây"; 
-				}
-				else
-				{
-					log.warning("Request Review is not null");
-//					log.warning("habogay da tung di dao qua day"); 
-				 	mes = "Yêu cầu chữa bài của bạn đang được xử lý"; 
 				 	Query<Editor> q = ofy().load().type(Editor.class); 
 				 	String reqMes = "Bài yêu cầu được chữa. Nếu bạn chữa bài này,hãy gửi lại một mã với nội dung: #reviewing https://www.facebook.com/groups/cec.edu.vn/permalink/" +postId; 
 				 	log.warning("size of editor: "+q.list().size()); 
@@ -132,7 +127,12 @@ public class ReviewPosting extends HttpServlet {
 					} catch (Exception e) {
 						// TODO: handle exception
 					}
-				 	
+				}
+				else
+				{
+					log.warning("Request Review is not null");
+//					log.warning("habogay da tung di dao qua day"); 
+				 	mes = "Yêu cầu chữa bài của bạn đang được xử lý"; 
 				}
 			}
 			else

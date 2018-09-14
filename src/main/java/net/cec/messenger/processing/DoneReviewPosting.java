@@ -132,8 +132,8 @@ public class DoneReviewPosting extends HttpServlet {
 	 				if(requestReview.getStatus()==1)
 	 				{
 	 					log.warning("request Review Status 1: "+requestReview.getStatus());
-	 					log.warning("EditorId: "+requestReview.getEditorId()+"\nSenderId: "+senderId);
-	 					if(requestReview.getEditorId().equals(senderId))
+	 					log.warning("EditorId: "+requestReview.getEditorMessengerId()+"\nSenderId: "+senderId);
+	 					if(requestReview.getEditorMessengerId().equals(senderId))
 		 				{	
 	 						log.warning("request review status 3: "+requestReview.getStatus());
 			 				requestReview.setStatus(2);
@@ -141,7 +141,7 @@ public class DoneReviewPosting extends HttpServlet {
 		 					int money = account.getMoney()+defaultPrice;
 			 				account.setMoney(money);
 			 				sum+=10;
-			 				Account reviewRequestAccount = utilities.getAccountByMessengerId(requestReview.getRequesterId());
+			 				Account reviewRequestAccount = utilities.getAccountByMessengerId(requestReview.getRequesterMessengerId());
 			 				int reviewRequestMoney = reviewRequestAccount.getMoney()-defaultPrice;
 			 				reviewRequestAccount.setMoney(reviewRequestMoney);
 			 				//da sua lai logic. Chi tru tien member khi editor da sua xong. Chua test.
@@ -150,7 +150,7 @@ public class DoneReviewPosting extends HttpServlet {
 		 				}
 		 				
 		 			 	String responeMessage = "Bài của bạn đã được chữa. Link: https://www.facebook.com/groups/cec.edu.vn/permalink/"+reviewPostId;
-		 			 	this.sendMessage.sendMessenge(requestReview.getRequesterId(), responeMessage);
+		 			 	this.sendMessage.sendMessenge(requestReview.getRequesterMessengerId(), responeMessage);
 	 				}
 	 				
 	 			}

@@ -2,18 +2,28 @@ package net.cec.entities;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Unindex;
 
 @Entity
 public class RequestReview {
 	@Id
 	private String postid;
-	
+	//account id
 	@Unindex
-	private String editorId;
+	private String editorAccountId;
 	
+	//messenger id
 	@Unindex
-	private String requesterId;
+	private String editorMessengerId;
+		
+	//accountId
+	@Unindex
+	private String requesterAccountId;
+	
+	//messenger
+	@Unindex
+	private String requesterMessengerId;
 	
 	@Unindex
 	private long createdDate;
@@ -22,11 +32,13 @@ public class RequestReview {
 	private long reviewDate;
 
 	//0: request - 1: editing - 2: done
-	@Unindex
+	@Index
 	private int status;
 	
 	@Unindex
 	private int price;
+	
+	
 
 	public String getPostid() {
 		return postid;
@@ -36,28 +48,36 @@ public class RequestReview {
 		this.postid = postid;
 	}
 
-	public String getEditorId() {
-		return editorId;
+	public String getEditorAccountId() {
+		return editorAccountId;
 	}
 
-	public void setEditorId(String editorId) {
-		this.editorId = editorId;
+	public void setEditorAccountId(String editorAccountId) {
+		this.editorAccountId = editorAccountId;
 	}
 
-	public long getReviewDate() {
-		return reviewDate;
+	public String getEditorMessengerId() {
+		return editorMessengerId;
 	}
 
-	public void setReviewDate(long reviewDate) {
-		this.reviewDate = reviewDate;
+	public void setEditorMessengerId(String editorMessengerId) {
+		this.editorMessengerId = editorMessengerId;
 	}
 
-	public String getRequesterId() {
-		return requesterId;
+	public String getRequesterAccountId() {
+		return requesterAccountId;
 	}
 
-	public void setRequesterId(String requesterId) {
-		this.requesterId = requesterId;
+	public void setRequesterAccountId(String requesterAccountId) {
+		this.requesterAccountId = requesterAccountId;
+	}
+
+	public String getRequesterMessengerId() {
+		return requesterMessengerId;
+	}
+
+	public void setRequesterMessengerId(String requesterMessengerId) {
+		this.requesterMessengerId = requesterMessengerId;
 	}
 
 	public long getCreatedDate() {
@@ -66,6 +86,14 @@ public class RequestReview {
 
 	public void setCreatedDate(long createdDate) {
 		this.createdDate = createdDate;
+	}
+
+	public long getReviewDate() {
+		return reviewDate;
+	}
+
+	public void setReviewDate(long reviewDate) {
+		this.reviewDate = reviewDate;
 	}
 
 	public int getStatus() {
@@ -83,6 +111,5 @@ public class RequestReview {
 	public void setPrice(int price) {
 		this.price = price;
 	}
-	
-	
+
 }

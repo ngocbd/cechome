@@ -65,7 +65,8 @@ public class ReviewingPosting extends HttpServlet {
 		RequestReview requestReview = ofy().load().key(key).now(); 
 		if(requestReview!=null)
 		{
-			requestReview.setEditorId(senderId);
+			requestReview.setEditorMessengerId(senderId);
+			requestReview.setEditorAccountId(account.getId()+"");
 			requestReview.setStatus(1);
 			requestReview.setReviewDate(Calendar.getInstance().getTime().getTime());
 			ofy().save().entities(requestReview).now(); 

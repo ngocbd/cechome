@@ -7,6 +7,7 @@ import com.googlecode.objectify.annotation.Index;
 @Entity
 public class Member {
 	//String id, String avatar
+	// facebookid
 	@Id
 	private String id;
 	
