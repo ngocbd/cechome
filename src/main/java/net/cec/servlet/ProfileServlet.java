@@ -3,6 +3,7 @@ package net.cec.servlet;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -82,10 +83,37 @@ public class ProfileServlet extends HttpServlet {
 		
 		Query<MemberPost> q = ofy().load().type(MemberPost.class);
 		q = q.filter("posterId", memberId);
-		List<MemberPost> posts = q.list();
+		List<MemberPost> posts1 = q.list();
+		if(posts1.size()>0)
+		{
+			for(int i=0;i<posts1.size();i++)
+			{
+				MemberPost  memberPost = posts1.get(i);
+				String display = "";
+				
+				if(posts1.get(i).getAttachments()!=null)
+				{
+					if(posts1.get(i).getAttachments().getType().equals("video_inline"))
+					{
+						display = "<div class=\"fb-video\" data-href=\""+posts1.get(i).getAttachments().getUrl()+"\" data-width=\"500\" data-show-text=\"false\">";
+					}
+					if(posts1.get(i).getAttachments().getType().equals("photo"))
+					{
+						display = "<img  src=\""+posts1.get(i).getAttachments().getMedia().getImage().getSrc()+"\">";
+					}
+				}
+				else
+				{
+					//display = posts1.get(i).getContent(); Doan nay Tit lam 1 cai anh giong nhu fb, co 1 cai khung, trong do la noi dung cua status.
+					display = "<img  src=\"https://storage.googleapis.com/crazy-english-community.appspot.com/images/kukixinh.JPG\">";
+				}
+				memberPost.setPicture(display);
+			}
+		}
+		
 
 		request.setAttribute("member", member);
-		request.setAttribute("posts", posts);
+		request.setAttribute("posts", posts1);
 		request.setAttribute("intro", intro);
 		request.setAttribute("level", level);
 		request.setAttribute("dedication", dedication);

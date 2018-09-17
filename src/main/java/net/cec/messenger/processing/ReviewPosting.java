@@ -139,7 +139,6 @@ public class ReviewPosting extends HttpServlet {
 			{
 				mes = "Bạn không đủ tiền để yêu cầu sửa bài. Bạn hãy nạp cec bằng cách chuyển khoản vnd vào tài khoản vietcombank. Tên chủ tk: Luong Thi Phien Số tk: 0801000250785 Nội dung: CEC-"+account.getId();
 			}
-			
 		}
 		if(mes !="" || mes ==null)
 		{

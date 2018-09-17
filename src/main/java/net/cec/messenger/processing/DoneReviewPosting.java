@@ -138,6 +138,7 @@ public class DoneReviewPosting extends HttpServlet {
 	 						log.warning("request review status 3: "+requestReview.getStatus());
 			 				requestReview.setStatus(2);
 			 				requestReview.setReviewDate(post.getCreatedTime().getTime());
+			 				requestReview.setReviewPostId("1784461175160264_"+postId);
 		 					int money = account.getMoney()+defaultPrice;
 			 				account.setMoney(money);
 			 				sum+=10;
@@ -149,7 +150,7 @@ public class DoneReviewPosting extends HttpServlet {
 			 				log.warning("request Review Status 2: "+requestReview.getStatus());
 		 				}
 		 				
-		 			 	String responeMessage = "Bài của bạn đã được chữa. Link: https://www.facebook.com/groups/cec.edu.vn/permalink/"+reviewPostId;
+		 			 	String responeMessage = "Bài của bạn đã được chữa. Link: https://www.facebook.com/groups/cec.edu.vn/permalink/"+postId;
 		 			 	this.sendMessage.sendMessenge(requestReview.getRequesterMessengerId(), responeMessage);
 	 				}
 	 				

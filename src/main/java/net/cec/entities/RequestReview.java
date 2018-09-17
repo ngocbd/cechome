@@ -9,6 +9,9 @@ import com.googlecode.objectify.annotation.Unindex;
 public class RequestReview {
 	@Id
 	private String postid;
+	
+	@Unindex
+	private String reviewPostId;
 	//account id
 	@Unindex
 	private String editorAccountId;
@@ -46,6 +49,14 @@ public class RequestReview {
 
 	public void setPostid(String postid) {
 		this.postid = postid;
+	}
+
+	public String getReviewPostId() {
+		return reviewPostId;
+	}
+
+	public void setReviewPostId(String reviewPostId) {
+		this.reviewPostId = reviewPostId;
 	}
 
 	public String getEditorAccountId() {

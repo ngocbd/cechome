@@ -106,7 +106,7 @@
 	<article>          Người yêu cầu       Bài cần chữa           Thời gian gửi bài(... ago)             Người chữa      Thời gian nhận bài(... ago)</article>
 	<c:forEach items="${requestReviewPosts}" var="requestReviewPost"> 
 	  <article>
-	  	<img alt = "requester review" src="//graph.facebook.com/${requestReviewPost.requesterAccountId}/picture?type=square" />    <a rel="post detail" href="https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(requestReviewPost.postid, '1784461175160264_', '')}">${fn:replace(requestReviewPost.postid, '1784461175160264_', '')}</a>           <time>${requestReviewPost.createdDate}</time>                       <c:choose> <c:when test="${requestReviewPost.editorAccountId ==null }"><!-- chỗ này Tít chế 1 cái ảnh để tạm chữ là "No Editor". C cũng chưa nghĩ ra ảnh này nên có nội dung như nào, nhưng nghĩa của nó là chưa có editor nào nhận sửa bài này. C đang để tạm ảnh profile fb của c. --><img alt = "no editor review" src="//graph.facebook.com/10211025641628816/picture?type=square" /></c:when> <c:otherwise><img alt = "editor review" src="//graph.facebook.com/${requestReviewPost.editorAccountId}/picture?type=square" /></c:otherwise>	</c:choose>                 <time>${requestReviewPost.reviewDate}</time> 
+	  	<img alt = "requester review" src="//graph.facebook.com/${requestReviewPost.requesterAccountId}/picture?type=square" />    <a rel="post detail" href="https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(requestReviewPost.postid, '1784461175160264_', '')}"  target="_blank">${fn:replace(requestReviewPost.postid, '1784461175160264_', '')}</a>           <time>${requestReviewPost.createdDate}</time>                       <c:choose> <c:when test="${requestReviewPost.editorAccountId ==null }"><!-- chỗ này Tít chế 1 cái ảnh để tạm chữ là "No Editor". C cũng chưa nghĩ ra ảnh này nên có nội dung như nào, nhưng nghĩa của nó là chưa có editor nào nhận sửa bài này. C đang để tạm ảnh profile fb của c. --><img alt = "no editor review" src="//graph.facebook.com/10211025641628816/picture?type=square" /></c:when> <c:otherwise><img alt = "editor review" src="//graph.facebook.com/${requestReviewPost.editorAccountId}/picture?type=square" /></c:otherwise>	</c:choose>                 <time>${requestReviewPost.reviewDate}</time> 
 	  </article>
 	</c:forEach>
 	
@@ -115,7 +115,7 @@
 	<article>          Người yêu cầu       Bài đã chữa           Thời gian gửi bài(... ago)             Người chữa      Thời gian nhận bài(... ago)</article>
 	<c:forEach items="${reviewDonePosts}" var="reviewDonePost"> 
 	  <article>
-	  	<img alt = "requester review" src="//graph.facebook.com/${reviewDonePost.requesterAccountId}/picture?type=square" />    <a rel="post detail" href="https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(reviewDonePost.postid, '1784461175160264_', '')}">${fn:replace(reviewDonePost.postid, '1784461175160264_', '')}</a>           <time>${reviewDonePost.createdDate}</time>                       <c:choose> <c:when test="${reviewDonePost.editorAccountId ==null }"><!-- chỗ này Tít chế 1 cái ảnh để tạm chữ là "No Editor". C cũng chưa nghĩ ra ảnh này nên có nội dung như nào, nhưng nghĩa của nó là chưa có editor nào nhận sửa bài này. C đang để tạm ảnh profile fb của c. --><img alt = "no editor review" src="//graph.facebook.com/10211025641628816/picture?type=square" /></c:when> <c:otherwise><img alt = "editor review" src="//graph.facebook.com/${reviewDonePost.editorAccountId}/picture?type=square" /></c:otherwise>	</c:choose>                 <time>${reviewDonePost.reviewDate}</time> 
+	  	<img alt = "requester review" src="//graph.facebook.com/${reviewDonePost.requesterAccountId}/picture?type=square" />    <a rel="post detail" href="https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(reviewDonePost.reviewPostId, '1784461175160264_', '')}" target="_blank">${fn:replace(reviewDonePost.reviewPostId, '1784461175160264_', '')}</a>           <time>${reviewDonePost.createdDate}</time>                       <c:choose> <c:when test="${reviewDonePost.editorAccountId ==null }"><!-- chỗ này Tít chế 1 cái ảnh để tạm chữ là "No Editor". C cũng chưa nghĩ ra ảnh này nên có nội dung như nào, nhưng nghĩa của nó là chưa có editor nào nhận sửa bài này. C đang để tạm ảnh profile fb của c. --><img alt = "no editor review" src="//graph.facebook.com/10211025641628816/picture?type=square" /></c:when> <c:otherwise><img alt = "editor review" src="//graph.facebook.com/${reviewDonePost.editorAccountId}/picture?type=square" /></c:otherwise>	</c:choose>                 <time>${reviewDonePost.reviewDate}</time> 
 	  </article>
 	</c:forEach>
 	
@@ -123,7 +123,7 @@
 	*** Member List có nhiều tiền nhất
 	<c:forEach items="${richMembers}" var="richMember"> 
 	  <article>
-	  	<img alt = "requester review" src="//graph.facebook.com/${richMember.id}/picture?type=square" />      <a rel="post detail" href="https://cec.net.vn/m/${richMember.fbId}">${richMember.name}</a>     <a class="fab fa-facebook" style="font-size:48px;" href="//facebook.com/profile.php?id=${richMember.fbId}" target = "_blank"></a><a class="fab fa-facebook-messenger" style="font-size:60px;color:blue;" href="//m.me/${richMember.fbId}" target = "_blank"></a>  
+	  	<img alt = "requester review" src="//graph.facebook.com/${richMember.id}/picture?type=square" />      <c:choose> <c:when test="${richMember.fbId ==null }"><a rel="post detail" href="https://user.cec.net.vn/account?fbid=null&accid=${richMember.id}">${richMember.name}</a></c:when><c:otherwise><a rel="post detail" href="https://cec.net.vn/m/${richMember.fbId}">${richMember.name}</a> </c:otherwise></c:choose>    <a class="fab fa-facebook" style="font-size:48px;" href="//facebook.com/profile.php?id=${richMember.fbId}" target = "_blank"></a><a class="fab fa-facebook-messenger" style="font-size:60px;color:blue;" href="//m.me/${richMember.fbId}" target = "_blank"></a>  
 	  </article>
 	</c:forEach>
 	
@@ -142,13 +142,13 @@
 1896325267307187
 1900714246868289
 
-<c:choose> <c:when test="${requestReviewPost.editorAccountId ==null }">
-			<img src="//graph.facebook.com/10211025641628816/picture?type=square" />
+<c:choose> <c:when test="${richMember.fbId ==null }">
+			<a rel="post detail" href="https://user.cec.net.vn/account?fbid=null&accid=${richMember.id}">${richMember.name}</a>
 		</c:when>
 		<c:otherwise>
-			<img src="//graph.facebook.com/${requestReviewPost.editorAccountId}/picture?type=square" />
+			<a rel="post detail" href="https://cec.net.vn/m/${richMember.fbId}">${richMember.name}</a> 
 		</c:otherwise>
-	</c:choose>
+</c:choose>
 
 
 						

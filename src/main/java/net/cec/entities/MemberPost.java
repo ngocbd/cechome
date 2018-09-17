@@ -1,5 +1,7 @@
 package net.cec.entities;
 
+import java.util.logging.Logger;
+
 import com.google.gson.Gson;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -7,11 +9,14 @@ import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Unindex;
 import net.cec.models.Attachments;
 import net.cec.models.Poster;
+import net.cec.task.handler.GetPostContent;
 import net.cec.utils.Utilities;
 
 @Entity
 public class MemberPost {
-// String id, String attachments, String type, String content, Long createDate, String featuredImage, Long lastupdate, String permalink, String picture, String poster, String posterId 
+
+	static Logger log = Logger.getLogger(MemberPost.class.getName()); 
+	// String id, String attachments, String type, String content, Long createDate, String featuredImage, Long lastupdate, String permalink, String picture, String poster, String posterId 
 	@Id
 	private String id;
 	
@@ -93,7 +98,15 @@ public class MemberPost {
 		if(this.attachments == null || this.attachments.isEmpty()){
 			return null;
 		}
-		return Utilities.GSON.fromJson(this.attachments, Attachments.class);
+		try {
+			log.warning("Attachments: " + Utilities.GSON.fromJson(this.attachments, Attachments.class));
+			return Utilities.GSON.fromJson(this.attachments, Attachments.class);
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.warning("Error: "+this.attachments);
+			return null;
+		}
+		
 	}
 
 	public void setAttachments(String attachments) {

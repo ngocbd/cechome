@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -50,10 +51,11 @@
       		</c:if>
 			<c:forEach items="${posts}" var="post"> 
 			  <article>
-			  <section>${post.createdDate}</section>
-			    <section>${post.content}</section>
+			  <section><a href= "https://www.facebook.com/groups/cec.edu.vn/permalink/${fn:replace(post.id, '1784461175160264_', '')}" target = "_blank">Facebook Status</a></section>
+			  <section>datetime: ${post.createdDate}</section>
 			    <section>${post.picture}</section>
-			    <section>${post.permalink}</section>			    
+			    <section>${post.content}</section>
+			    		    
 			  </article>
 			</c:forEach>
 		</div>
