@@ -94,47 +94,57 @@ public class ReviewPosting extends HttpServlet {
 				 	
 				 	if(account.getMessengerId()!=null) 
 				 	{
-				 		requestReview.setRequesterId(account.getMessengerId()); 
+				 		requestReview.setRequesterMessengerId(account.getMessengerId()); 
+				 		requestReview.setRequesterAccountId(account.getId()+"");
 				 	}
 				 
 				 	requestReview.setCreatedDate(Calendar.getInstance().getTime().getTime());
-				 	requestReview.setStatus(0); requestReview.setPrice(10);
-				 	
-				 	ofy().save().entities(requestReview); 
+				 	requestReview.setStatus(0); 
+				 	requestReview.setPrice(10);
+				 
+				 	ofy().save().entities(requestReview,account); 
 				 	mes = "Chúng tôi đã nhận được yêu cầu sửa bài của bạn. Chúng tôi sẽ cập nhật bài viết của bạn trong vài giây"; 
+				 	Query<Editor> q = ofy().load().type(Editor.class); 
+				 	String reqMes = "Bài yêu cầu được chữa. Nếu bạn chữa bài này,hãy gửi lại một mã với nội dung: #reviewing https://www.facebook.com/groups/cec.edu.vn/permalink/" +postId; 
+				 	log.warning("size of editor: "+q.list().size()); 
+//				 	String messIdList = "List of messengerId: \n"; 
+				 	try 
+				 	{
+				 		for(int i = 0;i<q.list().size();i++) 
+					 	{
+							 log.warning("editorId: "+q.list().get(i).getId()); 
+							 long accId = Long.parseLong(q.list().get(i).getId()); 
+							 Key<Account> accKey = Key.create(Account.class, accId);  
+							 Account accountFromEditor = ofy().load().key(accKey).now();
+//							 log.warning("messengerId: "+accountFromEditor.getMessengerId());
+							 if(accountFromEditor!=null) 
+							 { 
+//								 messIdList += "\n"+accountFromEditor.getMessengerId();
+								 log.warning("messengerId: "+accountFromEditor.getMessengerId());
+								 this.sendMessage.sendMessenge(accountFromEditor.getMessengerId(), reqMes); 
+							 }
+					 	}
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
 				}
 				else
 				{
 					log.warning("Request Review is not null");
 //					log.warning("habogay da tung di dao qua day"); 
 				 	mes = "Yêu cầu chữa bài của bạn đang được xử lý"; 
-				 	Query<Editor> q = ofy().load().type(Editor.class); 
-				 	String reqMes = "Bài yêu cầu được chữa. Nếu bạn chữa bài này,hãy gửi lại một mã với nội dung: #reviewing https://www.facebook.com/groups/cec.edu.vn/permalink/" +postId; 
-				 	log.warning("size of editor: "+q.list().size()); 
-//				 	String messIdList = "List of messengerId: \n"; 
-				 	for(int i = 0;i<q.list().size();i++) 
-				 	{
-						 log.warning("editorId: "+q.list().get(i).getId()); 
-						 long accId = Long.parseLong(q.list().get(i).getId()); 
-						 Key<Account> accKey = Key.create(Account.class, accId);  
-						 Account accountFromEditor = ofy().load().key(accKey).now();
-//						 log.warning("messengerId: "+accountFromEditor.getMessengerId());
-						 if(accountFromEditor!=null) 
-						 { 
-//							 messIdList += "\n"+accountFromEditor.getMessengerId();
-							 log.warning("messengerId: "+accountFromEditor.getMessengerId());
-							 this.sendMessage.sendMessenge(accountFromEditor.getMessengerId(), reqMes); 
-						 }
-				 	}
 				}
 			}
 			else
 			{
 				mes = "Bạn không đủ tiền để yêu cầu sửa bài. Bạn hãy nạp cec bằng cách chuyển khoản vnd vào tài khoản vietcombank. Tên chủ tk: Luong Thi Phien Số tk: 0801000250785 Nội dung: CEC-"+account.getId();
 			}
-			
 		}
-		this.sendMessage.sendMessenge(senderId, mes);
+		if(mes !="" || mes ==null)
+		{
+			this.sendMessage.sendMessenge(senderId, mes);
+		}
+		
 	}
 
 	/**

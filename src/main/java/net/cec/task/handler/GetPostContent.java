@@ -21,9 +21,8 @@ import com.restfb.json.JsonObject;
 import com.restfb.types.Post;
 import org.apache.commons.lang3.StringEscapeUtils;
 import net.cec.utils.Utilities;
+import net.cec.cronjob.GetPostListGroup;
 import net.cec.entities.*;
-import net.cec.messenger.processing.BalancePosting;
-
 import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.fcs.*;
 /**
@@ -32,7 +31,7 @@ import com.fcs.*;
 @WebServlet("/task/crawl/post")
 public class GetPostContent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	Logger log = Logger.getLogger(GetPostContent.class.getName());  
+	static Logger log = Logger.getLogger(GetPostContent.class.getName());   
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -46,7 +45,9 @@ public class GetPostContent extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		//id = id of posting
 		String strId = request.getParameter("id");
+		//posterid = fbId
 		String posterId = request.getParameter("posterid");
 		response.setContentType("text/html");
 		String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
@@ -60,49 +61,54 @@ public class GetPostContent extends HttpServlet {
 						Parameter
 								.with("fields",
 										"attachments, message, created_time"));
-	
+//		String id = post.getId();
+//		System.out.println("Id: "+post.getId());
+		
+		
+//		System.out.println("hbg: "+attachmentStr);
+
 		if(post != null)
 		{
 			String attachmentStr = "";
-			try {
-				for(int i=0;i<post.getAttachments().getData().size();i++)
-				{
-//					System.out.println("Attachments at "+(i+1)+": "+net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
-					attachmentStr +=StringEscapeUtils.unescapeEcmaScript(net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
-				}
-//				System.out.println("hbg: "+attachmentStr);
-			} catch (Exception e) {
-				// TODO: handle exception
-				log.warning("Error: "+e.getMessage());
-				return;
-			}
+			
 			Key<MemberPost> key = Key.create(MemberPost.class, post.getId());					
 			MemberPost memberPost = ofy().load().key(key).now();
 			if(memberPost==null)
 			{
+//				String id, String attachments, String type, String content, Long createDate, String featuredImage, Long lastupdate, String permalink, String picture, String posterId
 				try {
-//					String id, String attachments, String type, String content, Long createDate, String featuredImage, Long lastupdate, String permalink, String picture, String posterId
-					memberPost = new MemberPost();
-					memberPost.setId(post.getId());
-					memberPost.setAttachments(attachmentStr);
-					memberPost.setType(post.getType());
-					memberPost.setContent(post.getMessage());
-					memberPost.setCreatedDate(post.getCreatedTime().getTime());
-					memberPost.setLastUpdate(Calendar.getInstance().getTime().getTime());
-					memberPost.setPermalink(post.getPermalinkUrl());
-					memberPost.setPicture(post.getFullPicture());
-					memberPost.setPosterId(posterId);
-					 
-					ofy().save().entities(memberPost);	
-					
-					Querify querify = new Querify("cec");
-//					querify.insert(objs);
-					querify.insert(memberPost);
+					for(int i=0;i<post.getAttachments().getData().size();i++)
+					{
+	//					System.out.println("Attachments at "+(i+1)+": "+net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
+						if(post.getAttachments().getData().get(i).getDescription()!=null)
+						{
+							post.getAttachments().getData().get(i).setDescription(post.getAttachments().getData().get(i).getDescription().replaceAll("\"", "'"));
+							attachmentStr +=StringEscapeUtils.unescapeEcmaScript(net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
+						}
+						
+					}
+					log.warning("Attachments: "+attachmentStr);
 				} catch (Exception e) {
 					// TODO: handle exception
-					log.warning("Error: "+e.getMessage());
+					log.warning("Error of the attachment: "+e.getMessage());
 				}
-//				
+				
+				memberPost = new MemberPost();
+				memberPost.setId(post.getId());
+				memberPost.setAttachments(attachmentStr);
+				memberPost.setType(post.getType());
+				memberPost.setContent(post.getMessage());
+				memberPost.setCreatedDate(post.getCreatedTime().getTime());
+				memberPost.setLastUpdate(Calendar.getInstance().getTime().getTime());
+				memberPost.setPermalink(post.getPermalinkUrl());
+				memberPost.setPicture(post.getFullPicture());
+				memberPost.setPosterId(posterId);
+				
+				ofy().save().entities(memberPost);	
+				
+				Querify querify = Querify.getInstance("cec");
+//				querify.insert(objs);
+				querify.insert(memberPost);
 			}
 		}
 		
@@ -118,7 +124,7 @@ public class GetPostContent extends HttpServlet {
 	}
 	
 	public static void main(String[] args) {
-		Querify.getInstance().createTable(MemberPost.class);
+		Querify.getInstance("cec").createTable(MemberPost.class);
 		
 	}
 

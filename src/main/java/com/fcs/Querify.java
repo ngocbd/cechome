@@ -1,10 +1,15 @@
 package com.fcs;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.memcache.AsyncMemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.Dataset;
@@ -29,14 +34,14 @@ public class Querify {
 
 	BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
 	Logger log = Logger.getLogger(Querify.class.getName());
+	AsyncMemcacheService memcache = MemcacheServiceFactory.getAsyncMemcacheService();
 
 	String datasetName;
 	
-	private Querify() {
-
-	}
+	private static Querify instance= null;
 	
-	public Querify(String datasetName) {
+	
+	private Querify(String datasetName) {
 		// TODO Auto-generated constructor stub
 		dataset(datasetName);
 	}
@@ -45,11 +50,27 @@ public class Querify {
 		return this;
 	}
 
-	public static Querify getInstance() {
-		return new Querify();
+	public static byte[] getMD5Hex(final String inputString)  {
+
+	    MessageDigest md =null ;
+		try {
+			md = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    md.update(inputString.getBytes());
+
+	    byte[] digest = md.digest();
+
+	    return (digest);
 	}
 	public static Querify getInstance(String datasetName) {
-		return new Querify(datasetName);
+		if(instance==null)
+		{
+			instance= new Querify(datasetName);
+		}
+		return instance;
 	}
 
 	public void createDataSet(String datasetName) {
@@ -152,10 +173,19 @@ public class Querify {
 		this.bigquery.insertAll(insertAll);
 
 	}
-	public  TableResult query(String sql) throws JobException, InterruptedException {
+	public  TableResult query(String sql) throws JobException, InterruptedException, ExecutionException {
 		
-		QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sql).build();
-		return this.bigquery.query(queryConfig);
+		byte[] key = getMD5Hex(sql) ;
+		TableResult result = (TableResult) memcache.get(key).get();
+		if(result==null)
+		{
+			QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sql).build();
+			result=this.bigquery.query(queryConfig);
+			memcache.put(key, result);
+			
+		}
+		
+		return result;
 	
 		
 	}
@@ -175,6 +205,9 @@ public class Querify {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

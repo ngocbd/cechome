@@ -9,49 +9,51 @@ import com.googlecode.objectify.annotation.Unindex;
 @Entity
 public class Account {
 
-	
+	@Since(1.0)
 	@Id
 	private long id;
 
-	
+	@Since(1.0)
 	@Index
 	private String permission;
 
 	@Unindex
+	@Since(1.0)
 	private String name;
 
-	
+	@Since(2.0)
 	@Unindex
 	private String realName;
 
-	
+	@Since(2.0)
 	@Index
 	private String email;
 
-	
+	@Since(2.0)
 	@Unindex
 	private String phone;
 
-	
+	@Since(2.0)
 	@Unindex
 	private String phone_code;
 
-	
+	@Since(2.0)
 	@Unindex
 	private String address;
 
-	
+	@Since(3.0)
 	@Unindex
 	private String accessToken;
 
-	
+	@Since(3.0)
 	@Unindex
 	private String longLiveToken;
 
+	@Since(2.0)
 	@Index
 	private long joinTime;
 
-	
+	@Since(2.0)
 	@Index
 	private long lastLogin;
 
@@ -59,15 +61,15 @@ public class Account {
 	@Unindex
 	private String avatar;
 
-	
+	@Since(2.0)
 	@Unindex
 	private String gender;
 
-	
+	@Since(1.0)
 	@Index
 	private int post;
 
-	
+	@Since(1.0)
 	@Index
 	private int like;
 
@@ -75,39 +77,39 @@ public class Account {
 	@Index
 	private int comment;
 
-	
+	@Since(1.0)
 	@Index
 	private int share;
 
-	
+	@Since(2.0)
 	@Index
 	private boolean isGroupMember;
 
-	
+	@Since(1.0)
 	@Index
 	private int scores;
 
-	
+	@Since(2.0)
 	@Index
 	private int money;
 
-	
+	@Since(2.0)
 	@Unindex
 	private long birthday;
 
-	
+	@Since(2.0)
 	@Index
 	private String userClass;
 
-	
+	@Since(1.0)
 	@Index
 	private int level;
 
-	
+	@Since(1.0)
 	@Index
 	private int dedication;
 
-	
+	@Since(1.0)
 	@Index
 	private int daily;
 
@@ -116,20 +118,25 @@ public class Account {
 	private int longestDaily;
 
 	// user tu gioi thieu ve ban than
+	@Since(1.0)
 	@Unindex
 	private String introduce;
 
 	// khen thuong do admin set
+	@Since(1.0)
 	@Unindex
 	private String felicitation;
 
+	@Since(2.0)
 	@Unindex
 	private String badge;
-
+	
+	@Since(2.0)
 	@Index
 	private String fbId;
 	
-	@Index
+	@Since(2.0)
+	@Unindex
 	private String messengerId;
 
 	public int getShare() {

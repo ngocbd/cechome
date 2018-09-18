@@ -4,7 +4,6 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -16,15 +15,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jsoup.Jsoup;
 import org.jsoup.Connection.Method;
+import org.jsoup.Jsoup;
 
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
-import com.googlecode.objectify.cmd.Query;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
@@ -33,7 +28,6 @@ import com.restfb.types.Post;
 
 import net.cec.api.SendMessage;
 import net.cec.entities.Account;
-import net.cec.entities.Editor;
 import net.cec.entities.MemberPost;
 import net.cec.entities.RequestReview;
 import net.cec.utils.Utilities;
@@ -138,16 +132,17 @@ public class DoneReviewPosting extends HttpServlet {
 	 				if(requestReview.getStatus()==1)
 	 				{
 	 					log.warning("request Review Status 1: "+requestReview.getStatus());
-	 					log.warning("EditorId: "+requestReview.getEditorId()+"\nSenderId: "+senderId);
-	 					if(requestReview.getEditorId().equals(senderId))
+	 					log.warning("EditorId: "+requestReview.getEditorMessengerId()+"\nSenderId: "+senderId);
+	 					if(requestReview.getEditorMessengerId().equals(senderId))
 		 				{	
 	 						log.warning("request review status 3: "+requestReview.getStatus());
 			 				requestReview.setStatus(2);
 			 				requestReview.setReviewDate(post.getCreatedTime().getTime());
+			 				requestReview.setReviewPostId("1784461175160264_"+postId);
 		 					int money = account.getMoney()+defaultPrice;
 			 				account.setMoney(money);
 			 				sum+=10;
-			 				Account reviewRequestAccount = utilities.getAccountByMessengerId(requestReview.getRequesterId());
+			 				Account reviewRequestAccount = utilities.getAccountByMessengerId(requestReview.getRequesterMessengerId());
 			 				int reviewRequestMoney = reviewRequestAccount.getMoney()-defaultPrice;
 			 				reviewRequestAccount.setMoney(reviewRequestMoney);
 			 				//da sua lai logic. Chi tru tien member khi editor da sua xong. Chua test.
@@ -155,8 +150,8 @@ public class DoneReviewPosting extends HttpServlet {
 			 				log.warning("request Review Status 2: "+requestReview.getStatus());
 		 				}
 		 				
-		 			 	String responeMessage = "Bài của bạn đã được chữa. Link: https://www.facebook.com/groups/cec.edu.vn/permalink/"+reviewPostId;
-		 			 	this.sendMessage.sendMessenge(requestReview.getRequesterId(), responeMessage);
+		 			 	String responeMessage = "Bài của bạn đã được chữa. Link: https://www.facebook.com/groups/cec.edu.vn/permalink/"+postId;
+		 			 	this.sendMessage.sendMessenge(requestReview.getRequesterMessengerId(), responeMessage);
 	 				}
 	 				
 	 			}

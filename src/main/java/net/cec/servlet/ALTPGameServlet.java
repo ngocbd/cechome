@@ -1,47 +1,47 @@
-package net.cec.messenger.processing;
+package net.cec.servlet;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.cec.api.SendMessage;
-import net.cec.entities.Account;
-import net.cec.utils.Utilities;
 /**
- * Servlet implementation class VerifyFacebookId
+ * Servlet implementation class ALTPGameServlet
  */
-@WebServlet("/task/posting/balance")
-public class BalancePosting extends HttpServlet {
+@WebServlet("/ALTPGameServlet")
+public class ALTPGameServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	Utilities utilities = new Utilities();
-	SendMessage sendMessage = new SendMessage();
-	Logger log = Logger.getLogger(BalancePosting.class.getName());   
+       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BalancePosting() {
+    public ALTPGameServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
-    
-   	/**
+
+	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
-		String mes = "";
-	
-		String senderId = request.getParameter("senderid");
-		Account account = utilities.getAccountByMessengerId(senderId);
-		log.warning("Balance: "+account.getMoney());
-		mes = "Số tiền hiện có của bạn là "+account.getMoney()+" cec"; 
-		this.sendMessage.sendMessenge(senderId, mes);
+		response.setContentType("text/plain");
+	    response.setCharacterEncoding("UTF-8");
+
+	    RequestDispatcher dispatcher=request.getRequestDispatcher("/pages/altp.jsp");  
+	  //servlet2 is the url-pattern of the second servlet  
+	    
+	    try {
+			dispatcher.forward(request, response);
+		} catch (ServletException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}//method may be include or forward      
+	    
 	}
 
 	/**

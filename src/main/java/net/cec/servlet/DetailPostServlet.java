@@ -1,8 +1,9 @@
-package net.cec.servlet;
+	package net.cec.servlet;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.googlecode.objectify.Key;
 
 import net.cec.entities.MemberPost;
+import net.cec.models.Attachments;
+import net.cec.task.handler.GetPostContent;
 
 /**
  * Servlet implementation class DetailPostServlet
@@ -23,7 +26,7 @@ import net.cec.entities.MemberPost;
 @WebServlet("/p/*")
 public class DetailPostServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	static Logger log = Logger.getLogger(GetPostContent.class.getName());    
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -46,9 +49,25 @@ public class DetailPostServlet extends HttpServlet {
 		
 		Key<MemberPost> key = Key.create(MemberPost.class, postId);
 		MemberPost memberPost = ofy().load().key(key).now();
-
+		Attachments attachment = memberPost.getAttachments();
+		String display = "";
 		
+		if(attachment!=null)
+		{
+			//display video, image. priority video first, image second.
+			log.warning("type of Attachments: "+ attachment.getType());
+			if(attachment.getType().equals("video_inline"))
+			{
+				display = "<div class=\"fb-video\" data-href=\""+attachment.getUrl()+"\" data-width=\"500\" data-show-text=\"false\">";
+			}
+			if(attachment.getType().equals("photo"))
+			{
+				display = "<img  src=\""+attachment.getMedia().getImage().getSrc()+"\">";
+			}
+			
+		}
 		request.setAttribute("post", memberPost);
+		request.setAttribute("display", display);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/post.jsp");
 		try {
 			dispatcher.forward(request, response);

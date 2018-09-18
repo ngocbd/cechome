@@ -39,23 +39,7 @@ public class LoginServlet extends HttpServlet {
     response.sendRedirect(facebook);
     
     
-    /*
-     	# Giới thiệu về cộng đồng 
-		# Các hoạt động chính của CEC
-		# Các cách tham gia cùng CEC 
-		#Video  -> promote https://www.facebook.com/groups/cec.edu.vn/permalink/2117397505199961
-		
-		# video theo cuoc thi : ailatrieuphu
-		#Video theo seri vi du noi tiếng anh trong 90ngay ( cai nay goi la hanh trinh chinh phuc tieng anh )
-		# theo Event ( san tay o ho tay ) , Lịch Event sắp tới - có số điện thoại liên hệ với người tổ chức
-		
-		#LiveStream - Đã diễn ra (MIKE , mrNam , Em Trang IPA ... )  , Đang - các livestream đang diễn ra,  lịch live steam trong 7 ngày tới
-		#CHữa bài 
-		# Yêu câu chữa bài ( là các video cần được chữa nhưng chưa có ai chữa - mất tiền )
-		# Các topic học zoom với người nước ngoài 1 on 1 , 
-		
-		Member list theo các tiêu chí ( Nhiều tiền nhất , nhiều đóng góp nhất , Tương tác nhiều nhất , Vừa thắng các giải )
-     * */
+    
     
 
   }

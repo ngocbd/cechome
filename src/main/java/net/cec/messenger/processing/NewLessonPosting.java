@@ -58,7 +58,7 @@ public class NewLessonPosting extends HttpServlet {
 		String content = request.getParameter("nlcontent");
 		String postId = utilities.getNumberFromString(content);
 		String senderId = request.getParameter("senderid");
-		Account account = utilities.getAccountByMessengerId(senderId); 
+//		Account account = utilities.getAccountByMessengerId(senderId); 
 		String memberPostId = "1784461175160264_"+postId;  
 		log.warning("Start to get account name. MessengerId: "+senderId);
 	 	

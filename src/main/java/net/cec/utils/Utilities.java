@@ -22,13 +22,23 @@ import org.jsoup.Jsoup;
 import com.google.gson.Gson;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.cmd.Query;
+import com.restfb.DefaultFacebookClient;
+import com.restfb.FacebookClient;
+import com.restfb.Parameter;
+import com.restfb.Version;
+import com.restfb.types.send.ButtonTemplatePayload;
+import com.restfb.types.send.IdMessageRecipient;
+import com.restfb.types.send.Message;
+import com.restfb.types.send.NestedButton;
+import com.restfb.types.send.PersistentMenu;
+import com.restfb.types.send.PostbackButton;
+import com.restfb.types.send.SendResponse;
+import com.restfb.types.send.TemplateAttachment;
+import com.restfb.types.send.WebButton;
+import com.restfb.types.send.WebviewHeightEnum;
 
 import net.cec.api.WebHookServlet;
 import net.cec.entities.Account;
-
-
-
-
 
 public class Utilities {
 	
@@ -76,6 +86,9 @@ public class Utilities {
 	
 	public static SimpleDateFormat sdf2 = new SimpleDateFormat(
 			"dd/MM");
+	
+	
+		
 	/**
 	 * Get the Account from Messenger Id
 	 * @param String messengerId
@@ -241,7 +254,7 @@ public class Utilities {
 	}
 
 	/**
-	 * BÄƒm nhá»� list thÃ nh list chá»©a cÃ¡c list nhá»� hÆ¡n
+	 * BÄƒm nhá»� list thÃ nh list chá»©a cÃ¡c list nhá»� hÆ¡n
 	 **/
 	public static <T> List<List<T>> chopped(List<T> list, final int L) {
 		List<List<T>> parts = new ArrayList<List<T>>();
