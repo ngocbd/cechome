@@ -7,7 +7,7 @@
 
 <pre>
 <aside>
-	*** Giới thiệu về CEC
+	*** Giới thiệu về CEC habogay
 	<image src = "https://storage.googleapis.com/crazy-english-community.appspot.com/images/about.jpg" alt="About CEC"/>
 	CEC is a nongovernmental and nonprofit organization and is activated at October 30th, 2014 that trains real English by using Crazy English method, orients and introduces jobs for Vietnamese student generation.
 
@@ -22,7 +22,7 @@
 <aside>
 	*** Video
 	<div class="fb-video" data-href="https://www.facebook.com/100012576995887/videos/519733341789228" data-width="500" data-show-text="false">
-  </div>
+  	</div>
 </aside>
 <aside>
 

@@ -1,9 +1,14 @@
 package net.cec.task.handler;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.cmd.Query;
 import com.restfb.Connection;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
@@ -25,13 +31,15 @@ import net.cec.cronjob.GetPostListGroup;
 import net.cec.entities.*;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.fcs.*;
+
 /**
  * Servlet implementation class GetPostContent
  */
 @WebServlet("/task/crawl/post")
 public class GetPostContent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	static Logger log = Logger.getLogger(GetPostContent.class.getName());   
+	static Logger log = Logger.getLogger(GetPostContent.class.getName()); 
+	Utilities utilities = new Utilities();
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -61,11 +69,7 @@ public class GetPostContent extends HttpServlet {
 						Parameter
 								.with("fields",
 										"attachments, message, created_time"));
-//		String id = post.getId();
-//		System.out.println("Id: "+post.getId());
-		
-		
-//		System.out.println("hbg: "+attachmentStr);
+
 
 		if(post != null)
 		{
@@ -80,12 +84,19 @@ public class GetPostContent extends HttpServlet {
 					for(int i=0;i<post.getAttachments().getData().size();i++)
 					{
 	//					System.out.println("Attachments at "+(i+1)+": "+net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
-						if(post.getAttachments().getData().get(i).getDescription()!=null)
+						log.warning("description in attachment: "+post.getAttachments().getData().get(i).getDescription());
+						log.warning("attachments in for loop: "+post.getAttachments().getData().get(i));
+						if(!post.getAttachments().getData().get(i).equals(null))
 						{
-							post.getAttachments().getData().get(i).setDescription(post.getAttachments().getData().get(i).getDescription().replaceAll("\"", "'"));
+//							log.warning("habogay");
+							try {
+								post.getAttachments().getData().get(i).setDescription(post.getAttachments().getData().get(i).getDescription().replaceAll("\"", "'"));
+							} catch (Exception e) {
+								// TODO: handle exception
+								log.warning("Error when get Description in the attachments: "+e.getMessage());
+							}
 							attachmentStr +=StringEscapeUtils.unescapeEcmaScript(net.cec.utils.Utilities.GSON.toJson(post.getAttachments().getData().get(i)));
 						}
-						
 					}
 					log.warning("Attachments: "+attachmentStr);
 				} catch (Exception e) {
@@ -103,16 +114,56 @@ public class GetPostContent extends HttpServlet {
 				memberPost.setPermalink(post.getPermalinkUrl());
 				memberPost.setPicture(post.getFullPicture());
 				memberPost.setPosterId(posterId);
-				
 				ofy().save().entities(memberPost);	
 				
+				String str = (memberPost.getContent()).toLowerCase(); 
+		 		Matcher matcherLesson = Pattern.compile("#lesson(\\d+)cec").matcher(str); 
+		 		if (matcherLesson.find()) 
+		 		{
+		 			if(memberPost.getAttachments()!=null)
+		 			{
+		 				if(memberPost.getAttachments().getType().equals("video_inline")) 
+		 				{
+		 					int numberLesson = Integer.parseInt(utilities.getNumberFromString(str));
+				 			log.warning("The New Lesson: "+numberLesson);
+				 			log.warning("posterId: "+posterId);
+//				 			ofy().load().type(RequestReview.class).filter("status ==",2)
+				 			
+				 			Query<Account> q = ofy().load().type(Account.class);
+				 			q = q.filter("fbId", posterId);
+				 			Account acc = q.first().now();
+							        
+							if(acc!=null)
+							{
+								log.warning("accId: "+acc.getId());
+								Key<Lesson> keyLesson = Key.create(Lesson.class, acc.getId());
+								Lesson lesson = ofy().load().key(keyLesson).now();
+								
+					 			if(lesson!=null)
+					 			{
+					 				if(!lesson.getLesson().contains(numberLesson)) {
+					 					lesson.getLesson().add(numberLesson);
+					 					
+					 				}
+					 			}
+					 			else
+					 			{
+					 				lesson = new Lesson();
+					 				lesson.setId(acc.getId());
+					 				lesson.getLesson().add(numberLesson);
+					 				
+					 			}
+					 		
+					 			ofy().save().entities(lesson);
+							}
+		 				}
+		 			}	
+		 		} 
+
 				Querify querify = Querify.getInstance("cec");
-//				querify.insert(objs);
 				querify.insert(memberPost);
 			}
 		}
-		
-		
 	}
 
 	/**

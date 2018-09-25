@@ -15,7 +15,7 @@ import net.cec.utils.Utilities;
 @Entity
 public class MemberPost {
 
-	static Logger log = Logger.getLogger(MemberPost.class.getName()); 
+//	static Logger log = Logger.getLogger(MemberPost.class.getName()); 
 	// String id, String attachments, String type, String content, Long createDate, String featuredImage, Long lastupdate, String permalink, String picture, String poster, String posterId 
 	@Id
 	private String id;
@@ -41,6 +41,7 @@ public class MemberPost {
 	@Unindex
 	private String picture;
 
+//	posterId = fbId of poster
 	@Index
 	private String posterId;
 
@@ -99,11 +100,11 @@ public class MemberPost {
 			return null;
 		}
 		try {
-			log.warning("Attachments: " + Utilities.GSON.fromJson(this.attachments, Attachments.class));
+//			log.warning("Attachments: " + Utilities.GSON.fromJson(this.attachments, Attachments.class));
 			return Utilities.GSON.fromJson(this.attachments, Attachments.class);
 		} catch (Exception e) {
 			// TODO: handle exception
-			log.warning("Error: "+this.attachments);
+//			log.warning("Error: "+this.attachments);
 			return null;
 		}
 		

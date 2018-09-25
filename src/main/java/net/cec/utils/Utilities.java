@@ -265,5 +265,16 @@ public class Utilities {
 		return parts;
 	}
 
+	public static void main(String[] args) {
+//		String str = "LESSON 1 HOW TO BE A GOOD LEARNER 1.jpg";
+//		str = str.substring(0,str.indexOf("1.jpg"));
+//		System.out.println(str);
+		String imgUrl1 = "altp/lesson02/LESSON 1 HOW TO BE A GOOD LEARNER 1.jpg";
+		Matcher matcherLesson = Pattern.compile("altp/lesson(\\d+)/").matcher(imgUrl1); 
+ 		if (matcherLesson.find()) 
+ 		{
+ 			System.out.println("number: "+Integer.parseInt(matcherLesson.group(1)));
+ 		}
+	}
 	
 }
