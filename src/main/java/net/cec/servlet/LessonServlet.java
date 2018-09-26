@@ -30,6 +30,7 @@ import com.restfb.FacebookClient;
 import com.restfb.Parameter;
 import com.restfb.Version;
 import com.restfb.types.Post;
+import com.restfb.types.User;
 
 import net.cec.entities.Account;
 import net.cec.entities.Lesson;
@@ -60,14 +61,26 @@ public class LessonServlet extends HttpServlet {
 		Matcher matcher = Pattern.compile("/lesson/(\\d*)/?").matcher(request.getRequestURI());
 	    matcher.find();
 		int lessonId = Integer.parseInt(matcher.group(1));
-		long accId = Long.parseLong(request.getParameter("id1"));
+		
+		long accId = 0;
+		if(request.getParameter("id")==null&&request.getParameter("id")!="")
+		{
+			User user = (User)request.getAttribute("User");
+			log.warning("accId: "+user.getId());
+			accId = Long.parseLong(user.getId());
+		}
+		else
+		{
+			accId = Long.parseLong(request.getParameter("id"));
+		}
+		
 		Key<Lesson> keyLesson = Key.create(Lesson.class, accId);
 		Lesson lesson = ofy().load().key(keyLesson).now();
 		
 		if(lesson!=null)
 		{
 			List<Integer> lessonList = lesson.getLesson();
-			if(lessonList.contains(lessonId))
+			if(lessonList.contains(lessonId)||(lessonId-1)==lessonList.get(lessonList.size()-1))
 			{
 				GcsService gcsService = GcsServiceFactory.createGcsService();
 				String folder = "crazy-english-community.appspot.com";

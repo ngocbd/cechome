@@ -19,23 +19,35 @@
 	
 	<div class="container">
 		<div class="row">
-		accId: ${User.id}
-		  	<section>
-		  		<img alt = "requester review" src="${imgUrl1}"/>
-		  	</section>
-			<section>
-		  		<img alt = "requester review" src="${imgUrl2}"/> 
-		  	</section>
-		  	<section>
-		  		<audio controls>
-	  				<source src="${mp3Url}" type="audio/mpeg">
-				</audio>
-		  	</section>
-		  	<section>
-		  		<video width="320" height="240" controls>
-	  				<source src="${videoUrl}" type="video/mp4">
-				</video>
-		  	</section>	
+		<!-- accId: ${User.id} -->
+
+
+
+	<c:choose> 
+			<c:when test="${imgUrl1 ==null }">
+				Bạn chưa xem được bài này. Hãy học và submit bài đã học cho chúng tôi.
+				<a href = "https://cec.net.vn/alllesson" >All Lesson</a>
+			</c:when>
+			<c:otherwise>
+				<section>
+			  		<audio controls>
+		  				<source src="${mp3Url}" type="audio/mpeg">
+					</audio>
+			  	</section>
+			  	<section>
+			  		<video width="320" height="240" controls>
+		  				<source src="${videoUrl}" type="video/mp4">
+					</video>
+			  	</section>	
+			  	<section>
+			  		<img alt = "requester review" src="${imgUrl1}"/>
+			  	</section>
+				<section>
+			  		<img alt = "requester review" src="${imgUrl2}"/> 
+			  	</section>
+			</c:otherwise>
+	</c:choose>
+
 		</div>
 	</div>
 	<jsp:include page="/elements/footer.jsp" />

@@ -22,7 +22,12 @@
 		<div class="row">
 		<c:forEach items="${lessonNameLists}" var="lessonNameList"> 
 		  	<section>
-		  		<a href = "https://cec.net.vn/lesson/${lessonNameList.getKey()}?id1=${id1}" target = "_blank">${lessonNameList.getValue()}</a><br/>
+		  		<a href = "https://cec.net.vn/lesson/${lessonNameList.getKey()}" target = "_blank">${lessonNameList.getValue()}</a><br/>
+		  	</section>
+		</c:forEach>
+		<c:forEach items="${lessonNameNotExistLists}" var="lessonNameNotExistList"> 
+		  	<section>
+		  		${lessonNameNotExistList.getValue()}<br/>
 		  	</section>
 		</c:forEach>
 		</div>

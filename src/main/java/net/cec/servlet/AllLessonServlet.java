@@ -84,8 +84,8 @@ public class AllLessonServlet extends HttpServlet {
 			GcsService gcsService = GcsServiceFactory.createGcsService();
 			String folder = "crazy-english-community.appspot.com";
 			String prefix = "altp/lesson";
-			List<SimpleEntry>lessonNameLists = new ArrayList<>();
-			
+			List<SimpleEntry> lessonNameLists = new ArrayList<>();
+			List<SimpleEntry> lessonNameNotExistLists = new ArrayList<>();
 			ListOptions options = new ListOptions.Builder().setRecursive(true)
 					  .setPrefix(prefix)
 					  .build();
@@ -94,7 +94,7 @@ public class AllLessonServlet extends HttpServlet {
 			
 			ListResult result = gcsService.list(folder, options);
 			String imgUrl1 ="";
-			
+			int lengthLesson = 23;
 			while(result.hasNext())
 			{
 				ListItem  items = result.next();
@@ -124,18 +124,45 @@ public class AllLessonServlet extends HttpServlet {
 						lessonNameLists.add(aaa);
 						
 					}
+					else
+					{
+						SimpleEntry<Integer, String> aaa = new SimpleEntry(numberLesson, imgUrl1);
+						lessonNameNotExistLists.add(aaa);
+					}
 						
 				}
-
+				
 				GcsFilename fileName = new GcsFilename(folder, items.getName());
 				gcsService.update(fileName, fileOptions);
 			}
 			
-			
-			
+			log.warning("size of lessonNameList1: "+lessonNameLists.size());
+			log.warning("last element1: "+lessonNameLists.get(lessonNameLists.size()-1));
+			log.warning("lastNumberKey: "+Integer.parseInt(lessonNameLists.get(lessonNameLists.size()-1).getKey().toString()));
 			//https://storage.googleapis.com/crazy-english-community.appspot.com/altp/lesson01/How%20To%20Be%20A%20Good%20Learner.mp3
+			if(lessonNameLists.size()<lengthLesson)
+			{
+				int lastIndexLesson = Integer.parseInt(lessonNameLists.get(lessonNameLists.size()-1).getKey().toString());
+				log.warning("size of lessonNameList: "+lessonNameLists.size());
+				log.warning("last element: "+lessonNameLists.get(lessonNameLists.size()-1));
+				log.warning("lastIndexLesson: "+lastIndexLesson);
+				for(int i = 0; i<lessonNameNotExistLists.size();i++)
+				{
+					int number = Integer.parseInt(lessonNameNotExistLists.get(i).getKey().toString());
+					log.warning("Number: "+number);
+					if(number-1==lastIndexLesson)
+					{
+						lessonNameLists.add(lessonNameNotExistLists.get(i));
+						lessonNameNotExistLists.remove(i);
+						break;
+					}
+				}
+				
+				
+			}
 			
 			request.setAttribute("lessonNameLists", lessonNameLists);
+			request.setAttribute("lessonNameNotExistLists", lessonNameNotExistLists);
 			request.setAttribute("id1", accId);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -150,7 +177,6 @@ public class AllLessonServlet extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
