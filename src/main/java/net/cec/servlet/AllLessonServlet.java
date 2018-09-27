@@ -170,8 +170,7 @@ public class AllLessonServlet extends HttpServlet {
 						
 				}
 				
-				GcsFilename fileName = new GcsFilename(folder, items.getName());
-				gcsService.update(fileName, fileOptions);
+				
 			}
 			
 			//https://storage.googleapis.com/crazy-english-community.appspot.com/altp/lesson01/How%20To%20Be%20A%20Good%20Learner.mp3
