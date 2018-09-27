@@ -29,7 +29,9 @@ public class Lesson {
 	}
 
 	public void setLesson(List<Integer> lesson) {
+//		lesson.add(1);
 		this.lesson = lesson;
+		
 	}
 	
 }

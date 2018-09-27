@@ -2,6 +2,7 @@ package net.cec.servlet;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,21 +27,18 @@ public class LoginServlet extends HttpServlet {
 	  
     response.setContentType("text/html");
     response.setCharacterEncoding("UTF-8");
+    String go = URLEncoder.encode(request.getParameter("go"));
     String callbackURL = request.getScheme() + "://" + request.getServerName();
 	if(request.getServerPort()!=80 && request.getServerPort() !=443)
 	{
 		callbackURL+= ":" + request.getServerPort();
 	}
 	
-	callbackURL+= "/callback"; 
+	callbackURL+= "/callback?go="+go; 
     String facebook = new String(Secret.FacebookOauthBaseURL+"client_id="+Secret.FacebookAppId+"&redirect_uri="+callbackURL+"&scope=user_link%2cpublic_profile%2Cemail");
     logger.log(Level.WARNING, "url: "+facebook);
     
     response.sendRedirect(facebook);
-    
-    
-    
-    
-
+   
   }
 }

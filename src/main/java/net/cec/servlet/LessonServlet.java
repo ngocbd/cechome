@@ -76,7 +76,7 @@ public class LessonServlet extends HttpServlet {
 		
 		Key<Lesson> keyLesson = Key.create(Lesson.class, accId);
 		Lesson lesson = ofy().load().key(keyLesson).now();
-		
+		//còn đoạn view lesson1
 		if(lesson!=null)
 		{
 			List<Integer> lessonList = lesson.getLesson();

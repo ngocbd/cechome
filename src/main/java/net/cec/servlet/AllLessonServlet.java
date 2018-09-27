@@ -80,7 +80,7 @@ public class AllLessonServlet extends HttpServlet {
 		Lesson lesson = ofy().load().key(keyLesson).now();
 		
 		try {
-			log.warning("lesson : "+lesson.getLesson().size());
+//			log.warning("lesson : "+lesson.getLesson().size());
 			GcsService gcsService = GcsServiceFactory.createGcsService();
 			String folder = "crazy-english-community.appspot.com";
 			String prefix = "altp/lesson";
@@ -95,40 +95,78 @@ public class AllLessonServlet extends HttpServlet {
 			ListResult result = gcsService.list(folder, options);
 			String imgUrl1 ="";
 			int lengthLesson = 23;
+			
 			while(result.hasNext())
 			{
+				log.warning("1 while");
 				ListItem  items = result.next();
 				
 				if(items.getName().endsWith("1.jpg"))
 				{
+					log.warning("2 if");
 					imgUrl1 = items.getName().substring(items.getName().lastIndexOf("/")+1,items.getName().indexOf("1.jpg"));
 					int numberLesson = 0;
-					List<Integer> lessonList = lesson.getLesson();
-					Collections.sort(lessonList);
-					
-					
-//					get number of the lesson in img src. Then, compare the numberLesson with number lesson in datastore. It's the same number, add to the lesson list to display.
-					 
-			 		Matcher matcherLesson = Pattern.compile("altp/lesson(\\d+)/").matcher(items.getName()); 
+					Matcher matcherLesson = Pattern.compile("altp/lesson(\\d+)/").matcher(items.getName()); 
 			 		if (matcherLesson.find()) 
 			 		{
+			 			log.warning("3 if");
 			 			numberLesson = Integer.parseInt(matcherLesson.group(1));
 			 		}
-//					numberLesson = Integer.parseInt(imgUrl1.substring(imgUrl1.indexOf("false:altp/lesson")+17,(imgUrl1.indexOf("false:altp/lesson")+17)+2).trim());
-					log.warning("content: "+imgUrl1+"\n numberLesson in the img src: "+numberLesson);
-					
-					if(lesson.getLesson().contains(numberLesson))
-					{ 
-						SimpleEntry<Integer, String> aaa = new SimpleEntry(numberLesson, imgUrl1);
-						log.warning("number lesson: "+numberLesson);
-						lessonNameLists.add(aaa);
-						
+					if(lesson!=null)
+					{
+						List<Integer> lessonList = lesson.getLesson();
+						log.warning("haobogay");
+						log.warning("poke an cut:"+lesson.getLesson().size());
+						Collections.sort(lessonList);
+
+//						get number of the lesson in img src. Then, compare the numberLesson with number lesson in datastore. It's the same number, add to the lesson list to display.
+						 
+				 		
+				 		
+//						numberLesson = Integer.parseInt(imgUrl1.substring(imgUrl1.indexOf("false:altp/lesson")+17,(imgUrl1.indexOf("false:altp/lesson")+17)+2).trim());
+//						log.warning("content: "+imgUrl1+"\n numberLesson in the img src: "+numberLesson);
+				 		if(lessonList!=null)
+				 		{
+				 			
+				 			log.warning("4 if");
+				 			if(lesson.getLesson().contains(numberLesson))
+							{ 
+								log.warning("6 else if");
+								SimpleEntry<Integer, String> aaa = new SimpleEntry(numberLesson, imgUrl1);
+								log.warning("number lesson: "+numberLesson);
+								lessonNameLists.add(aaa);	
+							}
+							else
+							{
+								log.warning("7 else");
+								SimpleEntry<Integer, String> aaa = new SimpleEntry(numberLesson, imgUrl1);
+								lessonNameNotExistLists.add(aaa);
+							}
+				 		}
+				 		else
+				 		{
+				 			
+				 			SimpleEntry<Integer, String> aaa = new SimpleEntry(numberLesson, imgUrl1);
+							lessonNameNotExistLists.add(aaa);
+				 		}
+				 		
 					}
 					else
 					{
+						
 						SimpleEntry<Integer, String> aaa = new SimpleEntry(numberLesson, imgUrl1);
 						lessonNameNotExistLists.add(aaa);
+						
+						if(lessonNameLists.size()==0)
+						{
+							SimpleEntry<Integer, String> aaa1 = new SimpleEntry(1, imgUrl1);
+//							log.warning("number lesson: "+numberLesson);
+							lessonNameLists.add(aaa1);
+							lessonNameNotExistLists.remove(0);
+						}
 					}
+					
+					
 						
 				}
 				
@@ -136,31 +174,30 @@ public class AllLessonServlet extends HttpServlet {
 				gcsService.update(fileName, fileOptions);
 			}
 			
-			log.warning("size of lessonNameList1: "+lessonNameLists.size());
-			log.warning("last element1: "+lessonNameLists.get(lessonNameLists.size()-1));
-			log.warning("lastNumberKey: "+Integer.parseInt(lessonNameLists.get(lessonNameLists.size()-1).getKey().toString()));
 			//https://storage.googleapis.com/crazy-english-community.appspot.com/altp/lesson01/How%20To%20Be%20A%20Good%20Learner.mp3
-			if(lessonNameLists.size()<lengthLesson)
+			if(lessonNameLists.size()<lengthLesson&&lessonNameLists.size()>1)
 			{
+				log.warning("9 if");
 				int lastIndexLesson = Integer.parseInt(lessonNameLists.get(lessonNameLists.size()-1).getKey().toString());
 				log.warning("size of lessonNameList: "+lessonNameLists.size());
 				log.warning("last element: "+lessonNameLists.get(lessonNameLists.size()-1));
 				log.warning("lastIndexLesson: "+lastIndexLesson);
 				for(int i = 0; i<lessonNameNotExistLists.size();i++)
 				{
+					log.warning("10 for");
 					int number = Integer.parseInt(lessonNameNotExistLists.get(i).getKey().toString());
 					log.warning("Number: "+number);
 					if(number-1==lastIndexLesson)
 					{
+						log.warning("11 if");
 						lessonNameLists.add(lessonNameNotExistLists.get(i));
 						lessonNameNotExistLists.remove(i);
 						break;
 					}
 				}
-				
-				
+	
 			}
-			
+			log.warning("12 setAttribute");
 			request.setAttribute("lessonNameLists", lessonNameLists);
 			request.setAttribute("lessonNameNotExistLists", lessonNameNotExistLists);
 			request.setAttribute("id1", accId);
