@@ -27,7 +27,20 @@ public class LoginServlet extends HttpServlet {
 	  
     response.setContentType("text/html");
     response.setCharacterEncoding("UTF-8");
-    String go = URLEncoder.encode(request.getParameter("go"));
+    String go = request.getParameter("go") ;
+    
+    
+    String referrer = request.getHeader("referer"); 
+    if(go==null)
+    {
+    	if(referrer!=null)
+    	go=referrer;
+    	else
+    	go="https://cec.net.vn/";
+    }
+    
+    go=URLEncoder.encode(go);
+   
     logger.warning("go:"+go);
     String callbackURL = request.getScheme() + "://" + request.getServerName();
 	if(request.getServerPort()!=80 && request.getServerPort() !=443)

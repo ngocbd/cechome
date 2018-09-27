@@ -28,6 +28,8 @@ import com.restfb.Version;
 import com.restfb.json.JsonObject;
 import com.restfb.types.Post;
 import org.apache.commons.lang3.StringEscapeUtils;
+
+import net.cec.utils.Secret;
 import net.cec.utils.Utilities;
 import net.cec.cronjob.GetPostListGroup;
 import net.cec.entities.*;
@@ -64,7 +66,9 @@ public class GetPostContent extends HttpServlet {
 		log.warning("postID:"+strId);
 		log.warning("author:Id:"+posterId);
 		
-		String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
+		//token thang xeng dang bi loi ngu ngu //String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
+		
+		String accessToken = Secret.FacebookPageAccessToken;
 		FacebookClient fbClient = new DefaultFacebookClient(accessToken,
 				Version.LATEST);
 				
@@ -181,7 +185,25 @@ public class GetPostContent extends HttpServlet {
 	}
 	
 	public static void main(String[] args) {
-		Querify.getInstance("cec").createTable(MemberPost.class);
+		//Querify.getInstance("cec").createTable(MemberPost.class);
+		String strId = "2159714607634917";
+		
+		log.warning("postID:"+strId);
+		
+		
+		String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
+		FacebookClient fbClient = new DefaultFacebookClient(Secret.FacebookPageAccessToken,
+				Version.LATEST);
+				
+		Post post = fbClient
+				.fetchObject(
+						strId,
+						Post.class,
+						Parameter
+								.with("fields",
+										"attachments, message, created_time"));
+
+		log.warning("post:"+post.getMessage());
 		
 	}
 
