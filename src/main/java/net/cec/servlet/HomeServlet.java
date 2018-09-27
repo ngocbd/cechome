@@ -53,7 +53,7 @@ public class HomeServlet extends HttpServlet {
      * */
     List<String> idAltpList = new ArrayList<String>();
     try {
-		TableResult result = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where (content like '%#LESSON%' or content like '%#lesson%') and length(id) < 40 LIMIT 10 ");
+		TableResult result = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where (content like '%#LESSON%' or content like '%#lesson%') and length(id) < 40 order by createdDate desc LIMIT 10");
 		for (FieldValueList row :result.iterateAll()) 
 		{
 	        log.warning("id of altp content: "+row.get("id").getStringValue());
@@ -74,14 +74,16 @@ public class HomeServlet extends HttpServlet {
     List<String> memberListID = new ArrayList<>();
     for (Iterator iterator = altpPosts1.iterator(); iterator.hasNext();) {
 		MemberPost memberPost = (MemberPost) iterator.next();
-		log.warning("attachment: "+memberPost.getAttachments().getUrl());
-		if(memberPost.getAttachments().getType().equals("video_inline"))
+		if(memberPost.getAttachments()!=null)
 		{
-			memberPost.setPicture(memberPost.getAttachments().getUrl());
-			memberListID.add(memberPost.getPosterId());	
-			altpPosts.add(memberPost);
+			log.warning("attachment: "+memberPost.getAttachments().getUrl());
+			if(memberPost.getAttachments().getType().equals("video_inline"))
+			{
+				memberPost.setPicture(memberPost.getAttachments().getUrl());
+				memberListID.add(memberPost.getPosterId());	
+				altpPosts.add(memberPost);
+			}
 		}
-		
 	}
     request.setAttribute("altpPosts", altpPosts);
     Map<String, Member> ids = ofy().load().type(Member.class).ids(memberListID);
@@ -93,7 +95,7 @@ public class HomeServlet extends HttpServlet {
      * */
     List<String> idDay90List = new ArrayList<String>();
     try {
-		TableResult resultDay90 = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Dd][Aa][Yy] \\d+/\\d+') = true and length(id) < 40 limit 10");
+		TableResult resultDay90 = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Dd][Aa][Yy] \\d+/\\d+') = true and length(id) < 40 order by createdDate desc  limit 10");
 		for (FieldValueList row :resultDay90.iterateAll()) 
 		{
 	        log.warning("id of Days 90 content: "+row.get("id").getStringValue());
@@ -114,13 +116,17 @@ public class HomeServlet extends HttpServlet {
     List<String> memberDay90ListID = new ArrayList<>();
     for (Iterator iterator = day90Posts1.iterator(); iterator.hasNext();) {
 		MemberPost memberPost = (MemberPost) iterator.next();
-		log.warning("attachment: "+memberPost.getAttachments().getUrl());
-		if(memberPost.getAttachments().getType().equals("video_inline"))
+		if(memberPost.getAttachments()!=null)
 		{
-			memberPost.setPicture(memberPost.getAttachments().getUrl());
-			memberDay90ListID.add(memberPost.getPosterId());
-			day90Posts.add(memberPost);
+			log.warning("attachment: "+memberPost.getAttachments().getUrl());
+			if(memberPost.getAttachments().getType().equals("video_inline"))
+			{
+				memberPost.setPicture(memberPost.getAttachments().getUrl());
+				memberDay90ListID.add(memberPost.getPosterId());
+				day90Posts.add(memberPost);
+			}
 		}
+		
 		
 	}
     request.setAttribute("day90Posts", day90Posts);
@@ -132,7 +138,7 @@ public class HomeServlet extends HttpServlet {
      * */
     List<String> idSanTayList = new ArrayList<String>();
     try {
-		TableResult santayResult = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Ss][Ăă][Nn] [Tt][Ââ][Yy]') = true and length(id) < 40 limit 10");
+		TableResult santayResult = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Ss][Ăă][Nn] [Tt][Ââ][Yy]') = true and length(id) < 40 order by createdDate desc limit 10");
 		for (FieldValueList row :santayResult.iterateAll()) 
 		{
 	        log.warning("id of san tay content: "+row.get("id").getStringValue());
@@ -154,12 +160,16 @@ public class HomeServlet extends HttpServlet {
     List<MemberPost> santayPosts = new ArrayList<MemberPost>();
     for (Iterator iterator = santayPosts1.iterator(); iterator.hasNext();) {
 		MemberPost memberPost = (MemberPost) iterator.next();
-		log.warning("attachment: "+memberPost.getAttachments().getUrl());
-		if(memberPost.getAttachments().getType().equals("video_inline"))
+		if(memberPost.getAttachments()!=null)
 		{
-			memberPost.setPicture(memberPost.getAttachments().getUrl());
-			memberSantayListID.add(memberPost.getPosterId());	
-			santayPosts.add(memberPost);
+			log.warning("attachment: "+memberPost.getAttachments().getUrl());
+			if(memberPost.getAttachments().getType().equals("video_inline"))
+			{
+				memberPost.setPicture(memberPost.getAttachments().getUrl());
+				memberSantayListID.add(memberPost.getPosterId());	
+				santayPosts.add(memberPost);
+			}
+			
 		}
 		
 	}
@@ -173,7 +183,7 @@ public class HomeServlet extends HttpServlet {
      * */
     List<String> idLivestreamList = new ArrayList<String>();
     try {
-		TableResult livestreamResult = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Ll][Ii][Vv][Ee][Ss][Tt][Rr][Ee][Aa][Mm]') = true and length(id) < 40 limit 10");
+		TableResult livestreamResult = Querify.getInstance("cec").query("SELECT id FROM `crazy-english-community.cec.MemberPost` where  REGEXP_CONTAINS(content,r'[Ll][Ii][Vv][Ee][Ss][Tt][Rr][Ee][Aa][Mm]') = true and length(id) < 40 order by createdDate desc limit 10");
 		for (FieldValueList row :livestreamResult.iterateAll()) 
 		{
 			log.warning("id of live stream content: "+row.get("id").getStringValue());
@@ -195,13 +205,17 @@ public class HomeServlet extends HttpServlet {
     List<String> memberLivestreamListID = new ArrayList<>();
     for (Iterator iterator = livestreamPosts1.iterator(); iterator.hasNext();) {
 		MemberPost memberPost = (MemberPost) iterator.next();
-		log.warning(": "+memberPost.getAttachments());
-		if(memberPost.getAttachments().getType().equals("video_inline"))
+		if(memberPost.getAttachments()!=null)
 		{
-			memberPost.setPicture(memberPost.getAttachments().getUrl());
-			livestreamPosts.add(memberPost);
-			memberLivestreamListID.add(memberPost.getPosterId());
-		}	
+			log.warning(": "+memberPost.getAttachments());
+			if(memberPost.getAttachments().getType().equals("video_inline"))
+			{
+				memberPost.setPicture(memberPost.getAttachments().getUrl());
+				livestreamPosts.add(memberPost);
+				memberLivestreamListID.add(memberPost.getPosterId());
+			}
+		}
+			
 	}
     request.setAttribute("livestreamPosts", livestreamPosts);
     Map<String, Member> livestreamIds = ofy().load().type(Member.class).ids(memberLivestreamListID);

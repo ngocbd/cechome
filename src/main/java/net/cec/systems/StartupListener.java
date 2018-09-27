@@ -41,6 +41,7 @@ public class StartupListener implements ServletContextListener {
     	ObjectifyService.register(RequestReview.class);
     	ObjectifyService.register(Editor.class);
     	ObjectifyService.register(Device.class);
+    	ObjectifyService.register(Lesson.class);
     }
 	
 }

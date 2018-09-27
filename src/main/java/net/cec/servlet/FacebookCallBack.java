@@ -1,6 +1,7 @@
 package net.cec.servlet;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +42,8 @@ public class FacebookCallBack extends HttpServlet {
 			throws ServletException, IOException {
 		
 		String code = request.getParameter("code");
-
+		String go = URLDecoder.decode(request.getParameter("go"));
+		
 		if (code == null || code.isEmpty()) {
 			response.sendRedirect("/login");
 		} else {
@@ -51,7 +53,7 @@ public class FacebookCallBack extends HttpServlet {
 				callbackURL+= ":" + request.getServerPort();
 			}
 			
-			callbackURL+= "/callback";
+			callbackURL+= "/callback?go="+go;
 			
 //https://www.facebook.com/login.php?skip_api_login=1&api_key=1326545090735920&signed_next=1&next=https%3A%2F%2Fwww.facebook.com%2Fv2.8%2Fdialog%2Foauth%3Fredirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8080%252Fcallback%26scope%3Dpublic_profile%252Cemail%252Cpublic_profile%252Cuser_link%26client_id%3D1326545090735920%26ret%3Dlogin%26logger_id%3D7af8ca88-5683-9f44-51fa-404b4be6e1a7&cancel_url=http%3A%2F%2Flocalhost%3A8080%2Fcallback%3Ferror%3Daccess_denied%26error_code%3D200%26error_description%3DPermissions%2Berror%26error_reason%3Duser_denied%23_%3D_&display=page&locale=en_GB&logger_id=7af8ca88-5683-9f44-51fa-404b4be6e1a7
 			FacebookClient client = new DefaultFacebookClient(Version.VERSION_3_1);
@@ -115,7 +117,7 @@ public class FacebookCallBack extends HttpServlet {
 			c.setPath("/");
 			response.addCookie(c);
 			
-			response.sendRedirect("/");
+			response.sendRedirect(go);
 
 		}
 //		System.out.println("Habogay stayed here.");

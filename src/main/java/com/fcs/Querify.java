@@ -28,8 +28,6 @@ import com.google.cloud.bigquery.TableId;
 import com.google.cloud.bigquery.TableInfo;
 import com.google.cloud.bigquery.TableResult;
 
-
-
 public class Querify {
 
 	BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
@@ -37,38 +35,38 @@ public class Querify {
 	AsyncMemcacheService memcache = MemcacheServiceFactory.getAsyncMemcacheService();
 
 	String datasetName;
-	
-	private static Querify instance= null;
-	
-	
+
+	private static Querify instance = null;
+
 	private Querify(String datasetName) {
 		// TODO Auto-generated constructor stub
 		dataset(datasetName);
 	}
+
 	public Querify dataset(String datasetName) {
 		this.datasetName = datasetName;
 		return this;
 	}
 
-	public static byte[] getMD5Hex(final String inputString)  {
+	public static byte[] getMD5Hex(final String inputString) {
 
-	    MessageDigest md =null ;
+		MessageDigest md = null;
 		try {
 			md = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    md.update(inputString.getBytes());
+		md.update(inputString.getBytes());
 
-	    byte[] digest = md.digest();
+		byte[] digest = md.digest();
 
-	    return (digest);
+		return (digest);
 	}
+
 	public static Querify getInstance(String datasetName) {
-		if(instance==null)
-		{
-			instance= new Querify(datasetName);
+		if (instance == null) {
+			instance = new Querify(datasetName);
 		}
 		return instance;
 	}
@@ -83,8 +81,6 @@ public class Querify {
 		log.fine(String.format("Dataset %s created.%n", dataset.getDatasetId().getDataset()));
 	}
 
-	
-
 	public void createTable(Class c) {
 
 		String datasetName = "cec";
@@ -93,6 +89,9 @@ public class Querify {
 		ArrayList<Field> fieldList = new ArrayList<Field>();
 		for (java.lang.reflect.Field f : c.getDeclaredFields()) {
 
+			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
+				continue;
+			}
 			String fType = f.getType().getSimpleName().toUpperCase();
 			if (fType.equalsIgnoreCase("LONG")) {
 				fType = LegacySQLTypeName.INTEGER.toString();
@@ -110,8 +109,8 @@ public class Querify {
 		this.bigquery.create(tableInfo);
 
 	}
-	public Map<String, Object> objectToMap(Object o)
-	{
+
+	public Map<String, Object> objectToMap(Object o) {
 		Map<String, Object> recordsContent = new HashMap<String, Object>();
 		Class c = o.getClass();
 		for (java.lang.reflect.Field f : c.getDeclaredFields()) {
@@ -124,7 +123,7 @@ public class Querify {
 			String fName = f.getName();
 			try {
 				recordsContent.put(fName, f.get(o));
-				log.fine(c.getSimpleName()+"."+fName + ":" + f.get(o));
+				log.fine(c.getSimpleName() + "." + fName + ":" + f.get(o));
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -132,19 +131,23 @@ public class Querify {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 		return recordsContent;
 	}
-	public  <T> void insert(T... objs) {
 
-		
+	public <T> void insert(T... objs) {
+
 		Class<? extends Object> c = objs[0].getClass();
 		TableId tableName = TableId.of(this.datasetName, c.getSimpleName());
 
 		ArrayList<Field> fieldList = new ArrayList<Field>();
 		for (java.lang.reflect.Field f : c.getDeclaredFields()) {
-
+			
+			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
+				continue;
+			}
+			
 			String fType = f.getType().getSimpleName().toUpperCase();
 			if (fType.equalsIgnoreCase("LONG")) {
 				fType = LegacySQLTypeName.INTEGER.toString();
@@ -159,47 +162,44 @@ public class Querify {
 
 		TableDefinition tableDefinition = StandardTableDefinition.of(schema);
 		TableInfo tableInfo = TableInfo.newBuilder(tableName, tableDefinition).build();
-		
+
 		ArrayList<RowToInsert> rows = new ArrayList<RowToInsert>();
-		
+
 		for (int i = 0; i < objs.length; i++) {
-			RowToInsert row = RowToInsert.of(this.objectToMap(objs[i]) );
+			RowToInsert row = RowToInsert.of(this.objectToMap(objs[i]));
 			rows.add(row);
 		}
-		
-		
+
 		InsertAllRequest insertAll = InsertAllRequest.of(tableName, rows);
-		
+
 		this.bigquery.insertAll(insertAll);
 
 	}
-	public  TableResult query(String sql) throws JobException, InterruptedException, ExecutionException {
-		
-		byte[] key = getMD5Hex(sql) ;
+
+	public TableResult query(String sql) throws JobException, InterruptedException, ExecutionException {
+
+		byte[] key = getMD5Hex(sql);
 		TableResult result = (TableResult) memcache.get(key).get();
-		if(result==null)
-		{
+		if (result == null) {
 			QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sql).build();
-			result=this.bigquery.query(queryConfig);
+			result = this.bigquery.query(queryConfig);
 			memcache.put(key, result);
-			
+
 		}
-		
+
 		return result;
-	
-		
+
 	}
 
 	public static void main(String[] args) {
 
-
 		try {
-			TableResult result = Querify.getInstance("cec").query("SELECT * FROM `crazy-english-community.cec.Member` LIMIT 1000");
-			for (FieldValueList row :result.iterateAll()) {
-				
-		        System.out.println(row.get("password"));
-		      }
+			TableResult result = Querify.getInstance("cec")
+					.query("SELECT * FROM `crazy-english-community.cec.Member` LIMIT 1000");
+			for (FieldValueList row : result.iterateAll()) {
 
+				System.out.println(row.get("password"));
+			}
 
 		} catch (JobException e) {
 			// TODO Auto-generated catch block
@@ -211,7 +211,6 @@ public class Querify {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
 	}
 

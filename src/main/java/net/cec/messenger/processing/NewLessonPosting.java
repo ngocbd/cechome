@@ -3,7 +3,6 @@ package net.cec.messenger.processing;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,21 +13,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jsoup.Jsoup;
 import org.jsoup.Connection.Method;
+import org.jsoup.Jsoup;
 
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.NotFoundException;
-import com.googlecode.objectify.cmd.Query;
 
 import net.cec.api.SendMessage;
 import net.cec.entities.Account;
-import net.cec.entities.Editor;
 import net.cec.entities.MemberPost;
-import net.cec.entities.RequestReview;
 import net.cec.utils.Utilities;
 
 /**
@@ -58,27 +50,44 @@ public class NewLessonPosting extends HttpServlet {
 		String content = request.getParameter("nlcontent");
 		String postId = utilities.getNumberFromString(content);
 		String senderId = request.getParameter("senderid");
-//		Account account = utilities.getAccountByMessengerId(senderId); 
+		Account account = utilities.getAccountByMessengerId(senderId); 
 		String memberPostId = "1784461175160264_"+postId;  
 		log.warning("Start to get account name. MessengerId: "+senderId);
-	 	
+		
+			 	
 	 	Key<MemberPost> key = Key.create(MemberPost.class, memberPostId); 
 	 	MemberPost memberPost = ofy().load().key(key).now(); 
 	 	if(memberPost!=null) 
-	 	{ 
-	 		String str = (memberPost.getContent()).toLowerCase(); 
-	 		Matcher matcherLesson = Pattern.compile("#lesson(\\d+)cec").matcher(str); 
-	 		if (matcherLesson.find()) 
+	 	{
+	 		if(account.getEmail()!=null)
 	 		{
-	 			int newLesson = Integer.parseInt(utilities.getNumberFromString(str))+1;
-	 			log.warning("The New Lesson: "+newLesson);
-	 			//send the new lesson to the student 
-	 			mes = "Bài luyện tiếp theo của bạn sẽ được gửi tới email của bạn"; 
-	 		} 
-	 		else 
-	 		{ 
-	 			mes = "Bạn gửi link bài luyện đã học không đúng."; 
-	 		} 
+	 			String str = (memberPost.getContent()).toLowerCase(); 
+		 		Matcher matcherLesson = Pattern.compile("#lesson(\\d+)cec").matcher(str); 
+		 		if (matcherLesson.find()) 
+		 		{
+		 			if(memberPost.getAttachments()!=null)
+		 			{
+		 				if(memberPost.getAttachments().getType().equals("video_inline")) {
+		 					int newLesson = Integer.parseInt(utilities.getNumberFromString(str))+1;
+				 			log.warning("The New Lesson: "+newLesson);
+				 			//send the new lesson to the student 
+				 			mes = "Bài luyện tiếp theo của bạn: https://cec.net.vn/lesson/"+newLesson; 
+		 				}
+		 				else
+		 				{
+		 					mes = "Bạn gửi link bài luyện đã học không đúng.";
+		 				}
+		 			}	
+		 		} 
+		 		else 
+		 		{ 
+		 			mes = "Bạn gửi link bài luyện đã học không đúng."; 
+		 		}
+	 		}
+	 		else
+	 		{
+	 			mes = "Bạn chưa cập nhật đầy đủ thông tin cá nhân để chúng tôi có thể gửi bài mới qua email của bạn. https://user.cec.net.vn/account"; 
+	 		}	 
 	 	} 
 	 	else 
 	 	{ 
