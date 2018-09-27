@@ -60,6 +60,10 @@ public class GetPostContent extends HttpServlet {
 		//posterid = fbId
 		String posterId = request.getParameter("posterid");
 		response.setContentType("text/html");
+		
+		log.warning("postID:"+strId);
+		log.warning("author:Id:"+posterId);
+		
 		String accessToken = "EAAS2fFjpbzABAMwwxGgQczR3g4AlYoq1S3vKqZCgvqKvOUWswTavVtw7jkfPeA02NV9KNMn77ZAtj1t4ZBR1x2LLxUSbbc7J2Kjdw8dGFBMnnkGLRq1Hg4Xjx6PmHDvpsDZAeLpHBGI8rjzIg4iqZBDqWZABWdqhG0S2kQIqVlRAZDZD";
 		FacebookClient fbClient = new DefaultFacebookClient(accessToken,
 				Version.LATEST);
