@@ -12,7 +12,7 @@
 <header>
 	<c:choose>
 		<c:when test="${ User ==null }">
-			<a href="/login">Login</a>
+			<a href="https://cec.net.vn/login?go=https://cec.net.vn/">Login</a>
 		</c:when>
 		<c:otherwise>
 			<a href="/profile"><img src="//graph.facebook.com/${User.id}/picture?type=square" /></a>
