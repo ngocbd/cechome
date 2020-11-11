@@ -45,7 +45,7 @@
 
 				<artifactId>google-cloud-bom</artifactId>
 
-				<version>0.56.0-alpha</version>
+				<version>0.143.0</version>
 
 				<type>pom</type>
 
